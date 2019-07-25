@@ -11,14 +11,15 @@ First let's make a layout for a sample OMR from [Adrian's blog](https://pyimages
 <p align="center">
   <img alt="Adrian OMR" width="350" src="./images/AdrianSample/HE/adrian_omr.png">
 </p>
+
 1. Create a directory for your files, say `inputs/OMR_Files/AdrianSamples`. You can have multiple directories here(in production these can be city names). All of them will be checked by the program(thus you may want to remove unnecessary folders from `inputs/`).
 
-2. Put your image(s) in `inputs/OMR_Files/AdrianSamples/HE`. The `HE` part indicates `H_template.json` will be used.(Code `JE` is also supported to use one more template `J_template.json`)
+2. Put your image(s) in `inputs/OMR_Files/AdrianSamples/HE`. The *HE* part indicates *H_template.json* will be used(*JE* is also supported to use one more template *J_template.json*).
 
 3. Open `inputs/H_template.json`. 
 Start with putting the following text in it.
 
-_Note: To get a copy button for below commands, use **CodeCopy**_ <img alt="CodeCopy_Chrome" height="20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-clippy.svg/200px-Octicons-clippy.svg.png"> : [Chrome](https://chrome.google.com/webstore/detail/codecopy/fkbfebkcoelajmhanocgppanfoojcdmg) | [Firefox](https://addons.mozilla.org/en-US/firefox/addon/codecopy/).
+**Note:** To be able to copy <span><img alt="CodeCopy_Chrome" height="20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-clippy.svg/200px-Octicons-clippy.svg.png"></span> below commands directly, use [CodeCopy Chrome](https://chrome.google.com/webstore/detail/codecopy/fkbfebkcoelajmhanocgppanfoojcdmg) | [CodeCopy Firefox](https://addons.mozilla.org/en-US/firefox/addon/codecopy/).
 
 ```
 {
@@ -96,7 +97,7 @@ Layout configuration for above arrangement is:
 ```
 Above is the simplest version of what layouts file can do. 
 
-For more templates see `sample*` folders which make use of `bigGaps` as well.
+For more templates see `sample*` folders which make use of *bigGaps* parameter as well.
 <!-- 
 	4. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust templ_scale_fac in globals.py 
 -->
