@@ -1,0 +1,41 @@
+Ref : https://github.com/amilajack/project-checklist#%EF%B8%8F-spread-the-word
+
+[X] Move extras to Wiki
+[X] Add all those images to wiki
+[X] Readme
+After a Readme is done:
+[X] https://www.reddit.com/r/computervision/
+[X] https://news.ycombinator.com/news
+[X] Simple post like https://changelog.com/posts/detect-and-highlight-your-heart-rate-using-just-a-webcam-and-this-python-application
+[X] https://www.producthunt.com/makers/projects?topicId=89
+[X] Publish update on BMC
+[X] https://betapage.co/profile
+[X] https://www.swyya.com/projects/new
+[ ] Find More like(but not): /r/computervision/comments/bnpmdy/how_to_detect_a_credit_card
+[ ] /r/Python/comments/bravaq/whats_everyone_working_on_this_week/
+[ ] Blog post
+[X] Image processing group
+[X] Computer Vision Group FB
+
+[ ] Your gifs also qualify: satisfy student's curiosity on how OMR checking works --> r/educational_gifs
+[X] Contact more people - satya malik, sentdex
+[ ] Get featured on pyimagesearch (github link OR your blog article link )
+[ ] Dataset onto IDLI and r/ML
+
+Modules: 
+1. Rectangle detection (python awa android) : make and Answer on SO -  https://stackoverflow.com/questions/47427767/how-to-detect-rectangle-shape-object-using-python
+
+2. 
+
+[ ] Entry on Android arsenal
+
+Changes list: from https://github.com/amilajack/project-checklist
+Readme: "something is simple when there is nothing left to take away from it"
+Your tagline should communicate your value proposition: eg Babel: The compiler for writing next generation JavaScript
+>> Grade exams with a scanner🖨 or phone🤳 Robust. Quick. Free.
+:: Add a logo
+>> Some Techno logo?!
+
+
+[X] Keep OMRChecker lightweight. >> Make repo extras branch which will contain images and reports.
+Excess 3D viz goes on r/dataisbeautiful 
