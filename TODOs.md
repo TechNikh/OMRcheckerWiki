@@ -3,7 +3,7 @@ Looking for computer vision enthusiasts to take this project to the next level!
 
 ## Project Progress 
 #### Current Goals Progress : 
-### ✅✅✅✅✅✅🔲🔲🔲🔲
+### 🔲🔲🔲🔲🔲⏹⏹⏹⏹⏹
 <!-- ### 🔵🔵🔵🔵🔵🔵⚪️⚪️⚪️ -->
 <!-- ### 🥅__25__⚽️_____75______ 🏃‍♂️ -->
 
@@ -30,7 +30,7 @@ The tasks are ordered in increasing levels of difficulty below.
 📝 Add validation checks for configuration
 <!-- PRELIM_CHECKS : if blank OMR available, do test on it too-->
 
-📝 [ONGOING] Implement Accuracy evaluation 
+📝 Implement Accuracy evaluation 
 > There are 5-6 popular methods of evaluation available. We will be implementing all of them. See [this link](https://www.wikiwand.com/en/Multi-label_classification#/Statistics_and_evaluation_metrics).
 > From above link, "Exact match" method is implemented in main.py (look for 'TEST_FILE').
 > Need help in implementing any of the remaining methods.
@@ -120,4 +120,4 @@ Refactoring
 
 🎓 Introduce git submodules 
 
-Get Full ToDo List in the [Kanban Board(w.i.p)](https://github.com/Udayraj123/OMRChecker/projects/1).
+<!-- Get Full ToDo List in the [Kanban Board(w.i.p)](https://github.com/Udayraj123/OMRChecker/projects/1). -->
