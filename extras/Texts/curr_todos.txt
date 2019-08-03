@@ -278,9 +278,9 @@
 		// resolve cancel button threading issue
 		// Autocapture shall now be scheduled after confirming 4 quads
 
-		Refactoring
-			refactor evaluation code
-			rename variables to answer why they really exist
+			Refactoring
+				refactor evaluation code
+				rename variables to answer why they really exist
 
 	17 Apr:
 	Code result tabulation
@@ -397,10 +397,6 @@
 
 	14:34 PM -> Divide it into two stacks
 
-	ExcessDos :
-		Make and release that '3D viz'
-
-
 	24 Apr;
 	Finish Yellow marks first.
 		// > put getThreshold algo
@@ -451,14 +447,12 @@
 		<(after results) 4 Concise points>
 
 		Into latex:
-			> Blur the names in all images used.
+			//> Blur the names in all images used.
 			Report speed of checking : 
 			Accuracy in bubble detection : 
 			Failing cases : 
 
 	Good news!: 16 out of 20 real images worked well. wrong thresh in omr_8(legit); no circle in omr_11(partial skew - wrong page boundary),omr_19(partial skew),omr_21(blurry and skewed - legit),
-
-	YKWYD - Start studying for queueing b4 dinner
 
 	26 Apr
 		//Poster latex start
@@ -471,16 +465,9 @@
 			//Methodology Overview
 			//> Adaptive Threshold
 			//> Align Template
-
 			//> Attracting n Defining image of the project: 
 				//1. Bad looking OMR(Bad print, persp, *folded OMR) working
 				//2. Good looking OMR with shadow
-
-
-
-
-
-
 
 	LATER:
 		App:
@@ -520,23 +507,23 @@
 				Lesser functions
 				remove unnecc globals, locals
 			Update readme:
-				multiple case gifs
-				link to app
+				//multiple case gifs
+				//link to app
 				how to contribute
 				> Readme update new TODOs 
 					- identify if its a closeUp : check no contours & make use of whites!
 					- from code comments
 					- Point at juniors from coding club: Write as a guide to dive into this code easily
-				How to use for your org:
+				// How to use for your org:
 					> Inputs description
 					> Brand techno's marking scheme here. Show the how marking scheme json can handle it.
 			
-			Make code independent of Squads?
+			// Nope, it is extensible from single squad to any. - Make code independent of Squads?
 
 	23 June:
 		// Argparsing for nomarkers
 		// Run support in windows
-		Update readme for same^
+		// Update readme for same^
 		//Support for uneven rows template 
 			- changed validation : works for 2 unevens (coincidence)
 			// Nope, bigGap IS independent of orient- NEED OrientGrid?
@@ -546,14 +533,12 @@
 			 ^ IT MUST BE DUE TO THE ALIGN TEMPLATE METHOD
 			 **^VERIFY ON H_09609^**
 
-
-
 		ANALYZING DOCUMENT TEST DATASET
 			> TEMPLATE ALIGNMENT ISSUE IS NILL FOR DOCUMENT SCANS 
 				-> the reason why existing software work :P
 			> SCALED TEMPLATE MATCHING IS REDUNDANT FOR DOCUMENT SCANS.
 
-			//[FIXED-BUG] Nope, its limitation of colpts jugaad - uses vertical THR for single block instead of MCQ traverse > Q1 undetected issue - decreasing white THR would solve it, but is it the issue?
+			BUT REGRESSED NEW [BUG-COLPTS-AC] - //[FIXED-BUG-SINGLE-ROW] Nope, its limitation of colpts jugaad - uses vertical THR for single block instead of MCQ traverse > Q1 undetected issue - decreasing white THR would solve it, but is it the issue?
 				//Fixed-> So, make it traverse the natural way.
 			> [FIXED-BUG] The 123456789 prob on gray areas : Need more robust threshold selection methods. Also there's bad omrs and good omrs mixed. Need to separate them at fundamental level somehow first
 				*THIS IS A CLASSIC BUG induced by fixing another bug on a not so fresh part of code!*
@@ -590,7 +575,7 @@
 
 			> Noting Student Errs(More on directory creates): 
 				.. content moved to separate file here ...
-				Nope, see H_01916- Seems the colpts update has come heavy on bad OMRs
+				[BUG-COLPTS-AC] Nope, see H_01916- Seems the colpts update has come heavy on bad OMRs
 				- Need to find better preprocessing here! To 'actually' normalize it.
 
 
@@ -612,34 +597,31 @@
 		
 		GUARANTEED_IMPROVEMENTS_REQ:
 			> Implement Accuracy evaluation part
-			> captcha like manual verification process
-			> globalTHR for continous-like hists using ML.
-			> postResponse automation: Correction on missing langcode 'E' in OMRs with count report for the same corrections
-			[Overkill?!]>> Use typicode/husky for file endings handling dos2unix
+			//> captcha like manual verification process
+			> postResponse automation: Correction on missing langcode 'E' in OMRs with count report for the same
 			
 		REFACTORING - 
 			what does design pattern tell you about the way 'genQBlock' is used?
 
-		REDUNDANCY REDUCTIONS
-			Layout excess - Concatenations and Singles - deduce from rest of the key using a single parse
+		// Layout excess
+			Nope, should be open to user which to concat and which to not- Concatenations and Singles - deduce from rest of the key using a single parse
 
 		EFFICIENCY - 
 			Use Pyr down copy wherever possible, only alignment,etc intricate task be done on high res
-			> Optimize for silent speeds(remove unnec img copies)
-			> See that plots are not created unnec
+			>>> Optimize for silent speeds(remove unnec img copies)
+			// > See that plots are not created unnec
 
 		 +README SHOULD
 		//	> Reflect the usablily : show demo on 3 cases of multimarked in qvals
 				-> Also guide over bad rent layouts you have
 				> Then you can post onto reddit!
-		>>	> Portray the main difficulty is correct THRESHOLDING and not Cropping 
 		
 		+Report should
-			> Reflect the robustness : Advantage of adaptive - misaligned column read correctly
-
+			> Portray the main difficulty is correct THRESHOLDING and not Cropping 
+			> Reflect the robustness : Advantage of adaptive thresholding e.g. show misaligned column read correctly
 
 		VERY EXCESS(ideas):
-			Toggle button overlay for manual corrections(along with text inputs coz template align issues)
+			//Nope, much better ideas in verification_portal.txt - Toggle button overlay for manual corrections(along with text inputs coz template align issues)
 
 			>> mini AI: Train to give you correct threshold based on histogram array!!
 			mini hovers of adaptive threshold plots in the template overlay image
@@ -649,25 +631,25 @@
 					>> Especially on column alignment
 					>> Make use of 123456789 type multimarks here
 
-			++ If it is given that OMR is best quality possible, but it is tempered. So use area's bounding boxes to relatively put qbox grid.
-
+			++ If it is given that OMR is best quality possible, but it is tempered. So use area's bordered boxes in design to relatively put qbox grid.
 
 		My Excesses:
 			> gists of the show() function and similar
+			[Yup, git has config- Overkill?!]>> Use typicode/husky for file endings handling dos2unix etc
+
 		Contributor Excesses:
-			> progress bars for convertOMRs scripts
+			> QBlock Labels and Column Orientations for template in the setLayout mode
+			> globalTHR for continous-like hists using ML.
 			> animation frames for warped persp, markers match moving
-			> add wordcloud from research papers contents
-			attach
+			> add wordcloud from related research papers contents and attach
 			> Marker scale variation plot to justify ScaleRange
 			> File moving - flow diagram
 		
 		Contributor Very Excesses:
-			>> Visual guides for presence of multimarked in qvals
+			// >> Visual guides for presence of multimarked in qvals
 				-> Also guide over bad Roll, Blank Qs,
-			>> the mean threshold hist barplot - highlight which cols are marked which are not.
+			>> the all mean threshold hist barplot - highlight which cols are marked which are not.
 			>> Instead of csv, make Excel sheet output with color coding 
-
 
 
 FAAADU README TODOs- 
@@ -686,9 +668,9 @@ Images to generate(Gif + 2 level Stack)
 	// > CSV screenshot(take from report)
 	// > One hist-only difference of mobile(take from report)
 	[]> Alignment gif!! (use mobile images)
-	[]> noMarkers: Different layout case
+	// > noMarkers: Different layout case
 	[]> Fail cases grid: epic fails, Print Quality cases
-	[]> (Single QBlock) Flow of template gen
+	// > (Single QBlock) Flow of template gen
 
 
 
@@ -704,7 +686,8 @@ Images to generate(Gif + 2 level Stack)
 
 21 July -	
 	//>> Squad-wise differentiation needed as layout is different!
-	 	-> evaluation should be done for each squad!		
+	 	//-> evaluation should be done for each squad!		
+
 22 July -	
 	> Write the evaluation code
 		//-> from CSV : using pd DF in 5 lines
@@ -719,12 +702,13 @@ Images to generate(Gif + 2 level Stack)
 
 		-> from Coco: https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py
 	
-	>> Now there's the need of verification system!
+	//>> Now there's the need of verification system!
 		> For now, report using known genuines
 
 	> here you can actually randomly sample 5k?
 		> Yes. Should coz there isn't much variation in all the scans
 		> Write the random sampling code
+		> Keep it as a mini_script, separate from main.py so that you can resample without running code again
 	
 	> Follow COCO json format
 		> create a dict named DATASET.
@@ -743,4 +727,24 @@ Images to generate(Gif + 2 level Stack)
 		> Sample images location and dir structure changed
 		> Columns of all CSVs kept same with blanks in irrelevant cols
 
+	optimizations
+	> EFFICIENCY - 
+            Use Pyr down copy wherever possible, only alignment,etc intricate task be done on high res
+            >>> Optimize for silent speeds(remove unnec img copies)
+            > See that plots are not created unnec
+	> pipe the print output to save processing? - for 1 hr its fine
 
+	bugs
+	// Guessing it was legacy dependency after all - > What do you do for dummy moves
+	//> multimarked files not saved?
+	// Yaay! Patched correctly using col_orient - > That colwise limitation
+
+
+2 Aug '19
+//[BUG-COLPTS-AC] fixed up
+	Nop >>> SIMPLY CREATE CUSTOM QTYPE_MCQ_COL4A,4B etc that have same val and test it!
+		Nope >> But then pt.qNo assignment code needs change, ultimately same efforts
+	    	(Super active mode! GG!)_// actually traverse_pts needs change only!
+
+3 Aug '19
+// > All TODOs above are copied into TODOs.md now

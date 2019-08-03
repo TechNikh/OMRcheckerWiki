@@ -117,3 +117,5 @@ Explanation for the arguments:
 <!-- explanatory image here -->
 `--noCrop` : If the images are using a document scanner or do not need cropping page boundary.
 
+
+<!-- mention col_orient by example -->
