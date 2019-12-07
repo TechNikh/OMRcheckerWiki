@@ -99,23 +99,27 @@ Above is the simplest version of what layouts file can do.
 
 For more templates see `sample*` folders which make use of *bigGaps* parameter as well.
 <!-- 
-	4. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust templ_scale_fac in globals.py 
+	4. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust SheetToMarkerWidthRatio in globals.py 
 -->
 
 <!-- bummer: do not change the header text as it's linked -->
 ## Run the code
-
-`python3 main.py [--noMarkers] [--setLayout] [--noCrop] [--noAlign]` 
-
+```
+python3 main.py [--setLayout] [--noCropping] [--autoAlign] [--inputDir dir1] [--outputDir dir1] [--template path/to/template.json]
+```
 Explanation for the arguments:
 
-`--setLayout` : To setup template layout interactively(for custom OMRs). See Walkthrough [here](https://github.com/Udayraj123/OMRChecker/wiki/User-Guide).
+`--setLayout`: Set up OMR template layout - modify your json file and run again until the template is set.
 
-`--noMarker` : If the images do not have a marker.
+`--autoAlign`: (experimental) Enables automatic template alignment - use if the scans show slight misalignments.
 
-`--noAlign` : If the images are captured without much bending of paper.
-<!-- explanatory image here -->
-`--noCrop` : If the images are using a document scanner or do not need cropping page boundary.
+`--noCropping`: Disables page contour detection - used when page boundary is not visible e.g. document scanner.
+
+`--inputDir`: Specify an input directory.
+
+`--outputDir`: Specify an output directory.
+
+`--template`: Specify a default template if no template file in input directories.
 
 
 <!-- mention col_orient by example -->

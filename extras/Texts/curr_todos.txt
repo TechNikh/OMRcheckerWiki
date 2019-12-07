@@ -724,7 +724,7 @@ Images to generate(Gif + 2 level Stack)
 		See that on using wrong layout, it still doesn't fail.
 
 	Medium/Major changes:
-		> Sample images location and dir structure changed
+		// > Sample images location and dir structure changed
 		> Columns of all CSVs kept same with blanks in irrelevant cols
 
 	optimizations
@@ -748,3 +748,53 @@ Images to generate(Gif + 2 level Stack)
 
 3 Aug '19
 // > All TODOs above are copied into TODOs.md now
+
+
+20 Nov '19
+	//> Specifications for end-user product 
+	//> Prep up the colab demo for screenshare
+	> Review the Refactoring PR by Leongwaikay
+	> Need a colab branch for changing the show function to have matplotlib imshow.
+
+
+25 Nov Dos: 
+	merge PR
+		> Reopens the doors
+		> credibility restored
+			//> Auto determines noMarkers option from file presence
+			// > Marker file is specified in template.json
+			> SheetToMarkerWidthRatio should also be passed into template.json
+
+		// > Empty folder message
+
+		Test how output csv are generated in case of hierarchy of inputs
+			> output structure should contain same structure as inputs
+			> Test output flushing case - are fileObjs closed now		
+			> Verify on samples
+				> gitignore changes 			
+			> Update sample templates
+				> Adding 'QBlock' key in template
+				> Adding 'qType' at places
+
+		> Make readme changes and wiki changes, make it demo ready again!
+
+		> File movement
+			> move function should move inside
+
+		> preliminary checks run
+
+		review the hack todos 
+			> 
+
+		> restructure flow for setLayout
+		!git clone https://github.com/Udayraj123/OMRChecker --depth 1
+
+	
+	template designer ui
+		> react dnd
+
+	understand basics of drive api 
+		> accessing folder hierarchy
+		>> Don't go into the depths now. 
+			> Make the two webapps independent. Fetch template json from one, upload to other (or update with drive api is fine)
+			> 
