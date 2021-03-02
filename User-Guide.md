@@ -1,8 +1,7 @@
-# Step by Step Walkthrough for Creating Template Layout
+## Step by step walkthrough for creating a basic template
 **Note for contributors:** There's a [TODO Challenge](./TODOs) to automate this process using image processing. 
 
-## Setting up template on a sample image
-This tutorial will show you how to create template layout files such as the default 'H_template.json' by two examples.
+This tutorial will show you how to create template layout files using a simple example.
 
 <!-- TODO explain directory structure here -->
 
@@ -18,7 +17,7 @@ First let's make a layout for a sample OMR from [Adrian's blog](https://pyimages
 
 3. Create a file `inputs/template.json`. Start with putting the following text in it.
 
-**Note:** To be able to copy <span><img alt="CodeCopy_Chrome" height="20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-clippy.svg/200px-Octicons-clippy.svg.png"></span> below snippets directly, use [CodeCopy Chrome](https://chrome.google.com/webstore/detail/codecopy/fkbfebkcoelajmhanocgppanfoojcdmg) | [CodeCopy Firefox](https://addons.mozilla.org/en-US/firefox/addon/codecopy/).
+_Note: To be able to copy below snippets directly, consider using [CodeCopy Chrome](https://chrome.google.com/webstore/detail/codecopy/fkbfebkcoelajmhanocgppanfoojcdmg) | [CodeCopy Firefox](https://addons.mozilla.org/en-US/firefox/addon/codecopy/)._
 
 ```
 {
@@ -101,15 +100,14 @@ Run the command again to get the arranged layout.
   <img alt="Final Layout" width="400" src="./images/final_layout.png">
 </p>
 
-Layout configuration for above arrangement is:
-```
+Above is the simplest version of what the template.json can do. 
 
-```
-Above is the simplest version of what layouts file can do. 
+For more templates see [sample folders](https://github.com/Udayraj123/OMRChecker/tree/master/samples) which make use of *bigGaps* parameter as well.
 
-For more templates see `sample*` folders which make use of *bigGaps* parameter as well.
+To understand how rest of the parameters work in template.json, checkout [About Templates](./About-Templates)
+
 <!-- 
-	4. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust SheetToMarkerWidthRatio in globals.py 
+	1. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust SheetToMarkerWidthRatio in globals.py 
 -->
 
 <!-- bummer: do not change the header text as it's linked -->

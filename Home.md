@@ -5,6 +5,8 @@ Click on one of the pages to get started.
 
 [User Guide](./User-Guide)
 
+[About Templates](./About-Templates)
+
 [Rich Visuals](./Rich-Visuals)
 
 [For Contributors](./For-Contributors)
