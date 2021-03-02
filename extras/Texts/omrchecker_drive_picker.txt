@@ -1,0 +1,94 @@
+So, tech stack 
+Laravel - coz moderation portal and technalysis
+Why not node.js server? 
+    > Unfamiliarity and porting required. 
+    >^ Doesn't make sense now, given plenty of time(UNLESS YOU END UP GIVING PLENTY MORE TIME!)
+Why Laravel?
+    ...
+React - coz React is beautiful, and has high future dev scope.
+        > you've made drag and drop in it, and Drive Picker, CSV viewer etc are abstracted and available 
+        > But now that these components are under GPL, in fact react is under GPL only. Clarify yourself.
+MySQL - coz classic 
+Embedd Colab - coz GPL won't affect, and saves you on computation and all.
+
+So now, steps
+// > Verify your app config is - drive.file 
+// > setup react-laravel-boilerplate
+> Run that app into react-google-picker
+    // > codesandbox ready 
+    // > Store and reopen same dialogue?
+        // > Enough with existing stuff, do it too much and you're late again
+        // > Find correct scope example to run 
+        // >> setParent it is 
+    > Load and display selected csv from drive
+        // Nope, not sortable, and needs postCssLoaders (although now i see it's there in this boilerplate) http://react-toolbox.io/#/components/table
+        // > react-bootstrap-table
+            > Atleast sort should work!
+        // Nope, you're too stubborn, you made it work anyway! >> load client api from scratch and fetch the file in a straight way
+        //> Put data into state so that it's modifiable two way.
+            //  > First modularize the components to be able to write the state 
+                > Check about the re-renders affecting the auth token etc
+            //> Wrapped pickers -> FolderPicker, CSVPicker
+            //> BootstrapTable - as is _//
+        > Later give option to upload the csv file from pc
+            > When you have separated the line between free colab software and the portal 
+        > Import DB button and loading moderation portal 
+            >>> Move it into local laravel boilerplate.
+                // Nope, It's unstable > Found a new one with latest laravel?!
+            > Write simple loop to create a record per entry 
+                >> DB transactions
+                >> You can just use Eloquent::insert(). _//
+            > test Large import slow down ?
+                > Put loaders and disablers! coz thats why u have components
+            > How about async requests via moderation portal?!
+        > Show basic analytics!
+        > Connect the moderation code 
+            > Need to parse template.json here too(template designer boost)
+
+    > Print the count of files present
+        I use this code to download a binary image from drive using google picker. The trick part is in xhr.responseType = 'blob'; 
+    > map of output image vs fileids
+        > lara list contents recursive eqv ?!
+    > Iframe the colab
+        >> Nahi ho rah 
+        > Popup window? window.open and test postMessage as it is valid   
+        > Passing folderId n token to eventListener in colab?!
+    > Upload/replace template.json in selected folder
+    > Simplify output input structure in colab branch
+        > so that it can automatically find the csv? (mime type to laga hi diya h)
+        > exam name should come into that file name 
+    
+    >> Instructions phase 
+        > On the colab page. 
+    >> Uglify minify phase  
+        > all your external js for tracking and picker should be passed via a cdn?!
+
+https://docs.google.com/uc?export=download&id=11PfLJkHwpI3E5HCRZOckZet4QHNKJx8h
+
+omrchecker v1 api key : AIzaSyAZRwukwK6xdLTzcH_sFM_MQx7vc5ltPCs
+client 157648572317-mi74c609ec2r1gj0o2pp6p9khrp44hkr.apps.googleusercontent.com
+
+https://humanwhocodes.com/blog/2015/12/why-im-not-using-your-open-source-project/
+
+
+php artisan passport:install                              8.16.0 Node  10004  21:22:56 
+Encryption keys generated successfully.
+Personal access client created successfully.
+Client ID: 1
+Client secret: 3rftHcMQHOPa6ksnvlEKagdoShKqxOvfEflegy5c
+Password grant client created successfully.
+Client ID: 2
+Client secret: 9HrXCMEGjpaDGwl8hDVE6VgzHHoqxEMeTjAXk1ML                            8.16.0 Node  10005  21:23:10 
+Encryption keys already exist. Use the --force option to overwrite them.
+Personal access client created successfully.
+Client ID: 3
+Client secret: UCGHLjA6zJOjsZmYOiTUCdj0tAzzWzvLSbNqevLT
+Password grant client created successfully.
+Client ID: 4
+Client secret: ruhn4g3dhW84bIIQCgUU2Aap1aT3vHdZZ12T9pCK
+
+
+
+GPLv3 Distribute example 
+https://github.com/torzer/awesome-landlord
+ was forked from https://github.com/hipsterjazzbo/Landlord

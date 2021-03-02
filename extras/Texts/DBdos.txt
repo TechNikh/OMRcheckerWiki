@@ -1,0 +1,43 @@
+Get the most out of This
+// >> While running the code, RESIZE AND then STORE into samples with actual naming.
+	//> But store only those which satisfied cropping (non errs)
+	//> Also blur names while at it
+
+// Get new db, backup old one
+
+//** So the filename is there in output sheet, not file-id!
+	> Use input_paths
+
+//** Missing file-ids : Not your fault, skip em from both X n Y
+
+Get a pre-tuning number - the reference scale
+	> Although now you have already added looseness
+	>	combine results files n multimarked, remove irrel cols
+	>> ** Gotten first numbers - 0.303199 and 0.503041 <Good start!>
+	> for next time, save OUTPUT_SET in a separate overview file
+
+> FINE TUNING required here. see if low effort fixes solve them.
+	>> Why globalTHR isn't working well even on simple images. What do you do?
+		> It's the smooth gradient. Using jump of 3 or 4 will reduce it
+
+First saveCropped and then do TUNING
+	> always save no asymptotic time!
+
+NowExcessDos
+	> Create a testList.csv file to which it appends filename when pressed 'E', 'V', 'R', etc flags
+	> With a -t flag it will run only those images with given meta data(flags)
+
+> Now cases of bent papers
+	-> They remain a challenge I'd say
+	-> Lighting can be controlled, but keeping the paper flat? doubtful.
+	-> They are the distinction of mobile dataset.
+
+Why didn't you eval old db yesterday?
+	> Coz the verification wasn't done on it _//
+	> But now it seems the new verification is as good as old.
+
+Notes for next year process
+	> Rotate files before uploading ?
+
+ExcessDos
+	> Human guided globalTHR adjustment by a slider and rerun live within browser!

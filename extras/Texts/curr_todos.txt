@@ -143,7 +143,7 @@
 	# Let's Apply adaptive threshold QBlock-wise.
 	# >> Nope, do column-wise or don't -
 	# Then need to separate the Qs array - doable, but extensible?
-	# >> No need! You just need QVals, can get it cumulating via QBlocks too, get it as you find shifts
+	# >> No need! You just need QVals, can get it cumulating via qBlocks too, get it as you find shifts
 
 	Wish me clarity!!
 	>> (From Speech TA) 7x1 kernel erosion is damn perfect suggestion ==> Makes use of real morphology power
@@ -187,7 +187,7 @@
 			<- first match wont solve alignment, total avg alignment be max
 			-> There may not be many cases, even if they are- avg alignment method would also fail
 			<- For negative shifts?
-			<- Rather store initial centroids with QBlocks.
+			<- Rather store initial centroids with qBlocks.
 
 		(after discn with Mk)
 		_//	->> Move to make white on both edges of the window.
@@ -239,7 +239,7 @@
 		Choices : 1. Make Q again, or
 				  2. Store one more variable having qNo to qType mapping. _/ -> its already there = templJSON[squad]
 
-	// change json format to include keys for qNos and have its dims, instead of typing q9.1, q9.2, etc
+	// change json format to include keys for qNos and have its dimensions, instead of typing q9.1, q9.2, etc
 
 	7 Apr : Learning more of Android -
 	from LiveEdgeDetection app:
@@ -604,7 +604,7 @@
 			what does design pattern tell you about the way 'genQBlock' is used?
 
 		// Layout excess
-			Nope, should be open to user which to concat and which to not- Concatenations and Singles - deduce from rest of the key using a single parse
+			Nope, should be open to user which to concat and which to not- concatenations and singles - deduce from rest of the key using a single parse
 
 		EFFICIENCY - 
 			Use Pyr down copy wherever possible, only alignment,etc intricate task be done on high res
@@ -737,8 +737,7 @@ Images to generate(Gif + 2 level Stack)
 	bugs
 	// Guessing it was legacy dependency after all - > What do you do for dummy moves
 	//> multimarked files not saved?
-	// Yaay! Patched correctly using col_orient - > That colwise limitation
-
+	// Yaay! Patched correctly using colOrient - > That colwise limitation
 
 2 Aug '19
 //[BUG-COLPTS-AC] fixed up
@@ -763,8 +762,7 @@ Images to generate(Gif + 2 level Stack)
 		> credibility restored
 			//> Auto determines noMarkers option from file presence
 			// > Marker file is specified in template.json
-			> SheetToMarkerWidthRatio should also be passed into template.json
-
+			> sheetToMarkerWidthRatio should also be passed into template.json
 		// > Empty folder message
 
 		Test how output csv are generated in case of hierarchy of inputs
@@ -798,3 +796,85 @@ Images to generate(Gif + 2 level Stack)
 		>> Don't go into the depths now. 
 			> Make the two webapps independent. Fetch template json from one, upload to other (or update with drive api is fine)
 			> 
+
+7 Dec 
+// Merge PR! exactly 1 mth later 
+
+**  How's json to grid possible
+    > It's not without the new layout coord system in place
+    > Well then it was never a requirement to have same json between the repos
+
+
+//** User input for orient is tedious!
+    >> Better have a workspace of known grid arrangements and USER ONLY INPUTS NO OF QUESTIONS and then drags it around
+    >> See if you can configure grid-layout to only use sticky grid movement
+        _// > Drag the Qblock preconfigured with Orient and gaps!
+	
+** No point in keeping resizing based as qNos get lost!
+	> Better have + - buttons near the cross, later there would be the copy button too
+		> but react dnd would be strict about it 
+		> What if you make it in react, but from scratch
+			> Take ideas from the grid layout.
+			> Perhaps snapping to grid isn't very important and can be added later.
+
+
+You've got to use this?
+# The utility for GUI
+def calcGaps(PointsX,PointsY,numsX,numsY):
+    gapsX = ( abs(PointsX[0]-PointsX[1])/(numsX[0]-1),abs(PointsX[2]-PointsX[3]) )
+    gapsY = ( abs(PointsY[0]-PointsY[1])/(numsY[0]-1),abs(PointsY[2]-PointsY[3]) )
+    return (gapsX,gapsY)
+ 
+8:08pm > Decided to revisit this during moderation portal. Currently focusing on drive api/OMRChecker platform integration.
+	> Is it feasible to keep a freelance fork and a permanent solution ongoing..
+
+[13 Dec]
+	> Make colab into single click!
+	_// > Drive with full scope is the only scope we can work with. Now see how to read outputs folder thru this
+
+19 Dec 
+	> Loaded images from drive.
+		> but its too slow!
+			> For now it's fine as all files load one time
+			> Later verify that 
+	> Colab dos 
+		> Folder selector GUI 
+			//> Simple form input which then creates a symlink if file exists.
+		>> Copy outputs into mounted drive/symlink
+22 dec 
+	> Update it 
+		https://stackoverflow.com/questions/49345375/google-colaboratory-not-refreshing-drive-content
+	> Colab : Give download link to generated CSVs
+	> ** Uploading to a server is still better, right 
+		> Would still need a file manager to handle 
+			> Can get a repo doing that.
+	> Load csv in portal and show in table now.
+		> Decode the output paths using simple hash map
+		
+	> Merge moderation portal with drive demo, db capabilities should come from here
+	> Take drive ids via php api, or see if colab token is reusable here
+	
+	> At the end, obfuscate the colab code and add more wrapping commands and comments
+
+
+11 March 2020
+	> Leongwaikay's extension PR!
+		// fixed > marker images are getting selected?!
+		> fix per-template config for samples
+		> Test changing the layers config. Make sure defaults are in place.
+		> Refactor preliminary_check()
+		> prettify pre-commit hooks 
+		> Note: recursively all keys are converted to lower case (object_pairs_hook=LowercaseOrderedDict)
+		> Note :
+			# Each subdirectory should have images or should be non-leaf
+		RefactorDos : 
+			> Before push - everything into snake case!(This is comfortable one here.)
+				> But cv2 has camelCase in it.!
+			> Take normalize out from each of the 3 extensions 
+				> put it inside a single builtin preprocessor
+			> readResponse should return only what's necessary
+
+18 March 2019
+	> Little into accuracy again... Rotated images thing.
+	> Or have the pre-commit hooks in now 
+	> Or work upon template designer - taking qNos as input 

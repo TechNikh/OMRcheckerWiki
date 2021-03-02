@@ -1,0 +1,66 @@
+5 Sept 2020
+> New vision, new skills to apply on this project
+
+>  Co-motivation session attempt:
+        Refactoring : 45 mins 
+        > ONLY RELATED TO CLI 
+
+        // HAHAHAH, said 30 mins, took more than 30 days for end to end(10 Oct) - CLI : 30 mins 
+            > implement
+
+        Local Test & fine tuning: 30 min
+
+        Ground Rules: 
+            NO OPTIMIZATION : NEED BENCHMARK FOR CURRENT CODE 
+            MINIMAL SCOPE
+
+    Refactoring the CLI way 
+        > same config
+        > input can be a single file or a directory (any path)!
+            > src folder
+            > json input for config(think CLI)
+            > path as argument
+        1. GET RID OF config.py
+            -> defaults can stay.
+            -> config.json 
+                -> more separation from template.json 
+        2. Casings to snake_case everywhere
+            -> coz constants are better readable that way 
+            -> But library calls would be camelCase!
+                -> Yep, need camelCase for functions etc, only constants be snake_case
+
+Later think 
+    Where were these consumed before?
+    "GAMMA_HIGH": 1.25,
+    "MIN_STD": 25,
+
+    > Further enhancements 
+        > Partial overrides for localized config objects (like envStack!)
+        > For template - Works but doesn't make sense because of how it is read.
+        Do on-demand
+            > Schema val`idation for json files - extract ajv from existing file 
+
+Learnings : 
+    > Interpreted langs will have big problems(and some advantages too) when it comes to relative paths in imports
+        https://chrisyeh96.github.io/2017/08/08/definitive-guide-python-imports.html#case-2-syspath-could-change
+            # import os
+            # import sys
+            # sys.path.append(os.path.realpath("./src")) # Add src/ to PATH for internal use (Note: this must execute before using internal imports.)
+
+
+12-13 Feb 2021
+    // move aws sdk doc example into your project 
+    // collect all developments into the monorepo
+        > template designer
+        > drive picker 
+        > s3 browser
+        > moderation portal
+            // nope > migrate it now? 
+                > better problem to solve right now is what to do with the single omr response.
+            // nope, pointless > strip it to minimal now?
+                > https://github.com/apurva91/techno18Controller/compare/1adc8ca589ef1a89faba1b174d9959ce29e99b09...HEAD
+                > it's pointless boii. You may have someone else to do it when needed. Be concise.
+    // not a priority, but important - port it to react
+    give little bit of styling
+
+    side note: it's public. after prototype add IAM there
