@@ -12,43 +12,70 @@ First let's make a layout for a sample OMR from [Adrian's blog](https://pyimages
   <img alt="Adrian OMR" width="350" src="./images/AdrianSample/HE/adrian_omr.png">
 </p>
 
-1. Create a directory for your files, say `inputs/OMR_Files/AdrianSamples`. You can have multiple directories here(in production these can be city names). All of them will be checked by the program(thus you may want to remove unnecessary folders from `inputs/`).
+1. Create a directory for your files, say `inputs/AdrianSamples`. Note that all directories in `inputs/` directory will be processed by default.
 
-2. Put your image(s) in `inputs/OMR_Files/AdrianSamples/HE`. The *HE* part indicates *H_template.json* will be used(*JE* is also supported to use one more template *J_template.json*).
+2. Download above OMR image and put it into `inputs/AdrianSamples/`.
 
-3. Open `inputs/H_template.json`. 
-Start with putting the following text in it.
+3. Create a file `inputs/template.json`. Start with putting the following text in it.
 
-**Note:** To be able to copy <span><img alt="CodeCopy_Chrome" height="20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-clippy.svg/200px-Octicons-clippy.svg.png"></span> below commands directly, use [CodeCopy Chrome](https://chrome.google.com/webstore/detail/codecopy/fkbfebkcoelajmhanocgppanfoojcdmg) | [CodeCopy Firefox](https://addons.mozilla.org/en-US/firefox/addon/codecopy/).
+**Note:** To be able to copy <span><img alt="CodeCopy_Chrome" height="20" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-clippy.svg/200px-Octicons-clippy.svg.png"></span> below snippets directly, use [CodeCopy Chrome](https://chrome.google.com/webstore/detail/codecopy/fkbfebkcoelajmhanocgppanfoojcdmg) | [CodeCopy Firefox](https://addons.mozilla.org/en-US/firefox/addon/codecopy/).
 
 ```
 {
-  "Dimensions": [300, 400 ],
-  "BubbleDimensions": [20, 20 ],
-  "Concatenations" : {},
-  
-  "Singles" : ["q1","q2","q3","q4","q5"],
-  "MCQBlock1": {
-    "qType": "QTYPE_MCQ5",
-    "orig": [0, 0],
-    "qNos": [
-      [
-        ["q1", "q2", "q3", "q4", "q5"]
-      ]
-    ],  
-    "gaps" : [30, 30 ],
-    "bigGaps" : [30, 30]
-  }
+    "Dimensions": [
+        300,
+        400
+    ],
+    "BubbleDimensions": [
+        20,
+        20
+    ],
+    "Concatenations": {},
+    "Singles": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5"
+    ],
+    "QBlocks": {
+        "MCQBlock1": {
+            "qType": "QTYPE_MCQ5",
+            "orig": [
+                0,
+                0
+            ],
+            "qNos": [
+                [
+                    [
+                        "q1",
+                        "q2",
+                        "q3",
+                        "q4",
+                        "q5"
+                    ]
+                ]
+            ],
+            "gaps": [
+                30,
+                30
+            ],
+            "bigGaps": [
+                30,
+                30
+            ]
+        }
+    }
 }
 ```
 
-Run `python3 main.py --noMarkers --setLayout`. The page should get cropped automatically.
+Now run `python3 main.py --setLayout`. The page should get cropped automatically and show a basic overlay of the template.
 Note that we have put `"orig": [0, 0],` which means the overlay will start from the top left corner.
-<!-- Put initial layout here -->
+
 <p align="center">
   <img alt="Initial Layout" width="400" src="./images/initial_layout.png">
 </p>
-Now adjust the top left corner(origin). After checking output on multiple runs, you should find that origin is best fit at [65, 60]. Update the origin in json file : 
+Now let's adjust the top left corner(origin). Change origin from [0,0] to a better coordinate, say [50, 50] and run above command again. After multiple trials, you should find that origin is best fit at [65, 60]. Update the origin in json file : 
 
 ```
     "orig": [65, 60],
@@ -76,24 +103,7 @@ Run the command again to get the arranged layout.
 
 Layout configuration for above arrangement is:
 ```
-{
-  "Dimensions": [300, 400 ],
-  "BubbleDimensions": [25, 25],
-  "Concatenations" : {},
-  
-  "Singles" : ["q1","q2","q3","q4","q5"],
-  "MCQBlock1": {
-    "qType": "QTYPE_MCQ5",
-    "orig": [65, 60],
-    "qNos": [
-      [
-        ["q1", "q2", "q3", "q4", "q5"]
-      ]
-    ],  
-    "gaps" : [41, 52],
-    "bigGaps" : [30, 30]
-  }
-}
+
 ```
 Above is the simplest version of what layouts file can do. 
 
