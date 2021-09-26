@@ -108,7 +108,7 @@ To understand how rest of the parameters work in template.json, checkout [About 
 
 ### Note for capturing using mobile phones
 
-Please check the `sample1/` folder to understand the use of `omr_marker.jpg`. It is recommended to use the markers for much higher accuracy when scanning using mobile camera.
+Please check the `sample1/` folder to understand the use of `omr_marker.jpg`. If you can modify your OMR sheets with these markers, it will give you much higher accuracy when scanning using mobile camera.
 
 <!-- 
 	1. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust SheetToMarkerWidthRatio in globals.py 
