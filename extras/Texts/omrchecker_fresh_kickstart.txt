@@ -3,7 +3,7 @@
 
 >  Co-motivation session attempt:
         Refactoring : 45 mins 
-        > ONLY RELATED TO CLI 
+        > ONLY RELATED TO CLI
 
         // HAHAHAH, said 30 mins, took more than 30 days for end to end(10 Oct) - CLI : 30 mins 
             > implement
@@ -64,3 +64,1016 @@ Learnings :
     give little bit of styling
 
     side note: it's public. after prototype add IAM there
+
+
+
+14 Mar 2021
+    What to do with the API received
+        > Have some interface of the image converter types
+        close usecase is media conversion: https://smallpdf.com/jpg-to-pdf
+            > yet a huge difference is, it is a bulk job
+                // not needed now!! test speed first > why do we need it to be a bulk job? 
+                    for now - each image can be served template url from frontend
+
+        >> Let's have an image picker, that generates a fake s3 url and then mock response json is obt
+        > then add driver picker to this.
+
+
+    lambda side 
+        - specifications for file structure
+            - how the images will be stored and re-used. how output will be retrieved
+            - Keep upload and process as an atomic step
+                - yet under the hood use s3 paths to enable modular usage later.
+
+    opencollective candidate 
+    future visit 
+        https://github.com/salrashid123/image_file_converter
+        https://docs.imgproxy.net/#/serving_files_from_s3
+    Baad me bulk access ke liye this looks good:
+        https://docs.min.io/docs/python-client-quickstart-guide
+    
+    
+    simple flow:
+        enter and upload template json 
+            [Now]
+                - paste json and upload (in case uploaded images doesn't have it)
+                - use sdk manually - in the react app
+            [Later]
+                - validation (ajv)
+                - preview (one way)
+
+        upload images and get immediate individual results
+            - upload to s3 using the package now 
+                // nope not maintained - react-dropzone-s3-uploader-multipart?
+                - react-s3-uploader shall do 
+            - react-dropzone
+                // - group by filepath
+                // - extract json files in browser itself!
+                    // - A valid global json shall be the fallback or the override?
+                        -> fallback sounds better.
+                - directory parsing logic 
+                    >> - separate markers from images
+                        - will need to parse template mapped to that directory and figure out marker name 
+                            - if parsing is needed anyway then you can also 
+                                - resize the images to template's dimensions before sending 
+                                - locally see if overlay template matches 
+                                    - this leaves out only morphology and adaptive thresholding into omrchecker
+                                        - if this is done, you can apply throttling to feature releases
+                                    - as such translating code shall not take much time, and code would get refactored vastly
+                        nope - do we have to pass marker separately?
+                            - coz how will template.json tell the marker's path in cloud?
+                                - we can have a db that maps filepath with s3 path for a clean approach
+                                - 
+                    // later - some validation here as well. 
+                        // - only jpg or png images
+                        - warnings for  
+                            - "no parent template, using fallback..."
+                            - "empty directory"
+                        - limit on number of files (experimentally identify for OSX)
+                            - works fine for whole omr db! took just about 10 seconds for 5 GB images
+                                - wait, didn't work for 13k images totalling 2GB
+                                    - max stack reached for HE folder with 5.3k images 
+                            - Still the bottleneck would be on number of network calls 
+                                // START WITH BULK CALL ONLY - have to do with bulk payload
+                                    - Start uploading images to s3 right after drop 
+                                    - PROCESS per-collapsible(as it would eventually denote a single exam)
+                            - (later) still look for standard methods to compress/resize before upload. (blob shall work anyway)
+                        - limit on directories depth?
+                    - i.e. upto process_files(omr_files, template, args_local, out) (just that in this case it'll be a network call)
+                    (ON HOLD, PRIORITIZING USER MANAGEMENT NOW)- some way to define grouping depth
+                        - in the end the excel sheets shall need minimal processing/merging
+                            - template.json shall tell about which sheet it shall append to
+                                - this will also help in finding duplicates
+                            >> template.json can also tell any custom output path where to collect the info.
+                                - defaults to current directory path of that template json
+                                    - what about defaults for inner directories whose template.json is outside?
+                                        - It's current directory path of the image
+                                        
+                                - each directory shall have a mapping to a template file 
+                                - and we can group it by that mapped output path
+                - later allow multiple drops to update/merge instead of overwrite 
+            - for immediate results 
+                - get a response modal on clicking the scan icon on image
+                - same modal shall allow for
+                    - verification (arrow keys to view all images in the collapsible )
+                    - retry with tuning some params 
+                    - seeing detected bubbles on overlay that also allows correction. 
+                        - saving the corrections shall happen directly into db with file id, exam id, responses. (every year- nope, new exam id every year),
+                    - (later) save this response as answer key
+
+
+    Later:
+        Apply linter/prettier in this react code. 
+        Custom webpack comes further later on.
+
+    ** [Decision][Taken] _// putting directory parsing logic in frontend
+        - ideal place was backend, but AWS s3 doesn't support recursive listing/updating that well 
+        - using it in frontend has its own ease of dev too.
+            // Not really, but workarounds are good enough - Is this scalable?
+                - latest browser shall support sufficient files 
+                - but OMRs scale to tens of thousands. Better think of some alternative that shall be PROVISIONED BUT IMPLEMENTED LATER 
+                    - If partial files are selected, it'd still work based on unique image path.
+                        - shall PROCESS on basic criterion: IMAGE PATH IS IMAGE ID.
+                - RETRY LOGIC PER IMAGE is a must to keep.
+        - This means parsing template json to get marker file is also to be managed by frontend?!
+            - Yes, it isn't a pure configuration anyway
+
+
+
+
+API calls to handle 
+    Entity-wise:
+        User: CRUD with Interface
+        Collector: CRUD with Interface 
+        Questionaire: 
+            - CRUD from directory structure and Interface 
+                - ID is filepath+groupId
+                    - goal is to enable bulk rerun.
+            - List 
+                - load by user id 
+                - load by 
+        Response: 
+            - CRUD from directory structure and Interface 
+                - Duplicate check during updation
+                - Edit for correction
+                - Edit for finetuning single image 
+            - List 
+                - load grouped by Questionaire id
+            >> Find bulk createOrUpdate methods in typeorm here 
+    Actions-wise:
+        CheckOMR
+            - Questionaire, Image, TuneSettings
+        BulkCheckOMR - folderwise
+            - Questionaire, Images, TuneSettings
+        Bulk upload?
+            on FE you can use p-limit:
+                https://github.com/sindresorhus/p-limit
+        
+
+    
+FE side features 
+    - CSV generation folder-wise(per collapsible)
+        
+    previous phase left out:
+        - bringing that response modal into here    
+        - image upload will be pending
+            - with User's s3 Bucket 
+
+
+
+23 Mar 
+    typegraphql local setup into repo   
+        // - Fix onto one example code to start with
+            - type orm _// or //nope -apollo client 
+        // - also setup graphql voyager
+        // - with expess ApolloServer
+        // nop, use mysql - setup postgresql (nop-might already be there)
+        - also merge authorization example
+
+28 Mar and 4 Apr
+    - Authorization print s3 bucket
+        - use AWS ka UM directly.
+            aws creds 
+                IAM username: udayraj123
+                IAM password: uday123@aws
+            account id 
+                460475016873
+
+    - appsync gateway
+        https://6w6w4rtdmfhmjh5frn75n7n72a.appsync-api.ap-southeast-1.amazonaws.com/graphql
+        
+
+    Check how this app uploads 
+        - the put call 
+            - mutation with file.localUri
+    // Nope, don't refactor written code now. - Migrate it to v3 first 
+        - just update the imports and see what breaks 
+            - keeping this resolves.
+            "resolutions": {
+                "apollo-client": "2.6.3"
+            }
+        // correct - the actual issue is that aws-amplify-graphql example seems to be unnecessarily use aws-appsync    
+            - if we consider just taking the schema out, and plainly using the put call? 
+                - consider using that auth starter then. 
+                    - yeah sounds better.
+            - there's also an amplify gql client
+                https://docs.amplify.aws/lib/graphqlapi/query-data/q/platform/js#using-amplify-graphql-client
+
+    - add p-limit to this app itself 
+        - first move-in the drag and drop to get files array.
+        - p-limit needed for two bulk jobs: 
+            - uploading to s3   
+                - parallel uploads limit
+                - plus total files limit
+            - calling the lambda
+                - parallel calls limit
+
+
+
+4 Apr 
+aws auth starter into your app, print bucket
+    // @amplify/ has it - use hooks
+        - got some here: 
+            https://itnext.io/creating-reusable-abstractions-with-amplify-and-react-hooks-97784c8b5c2a
+            - directly abstractify auths with UserAuthProvider.
+        - updated version lies here: https://github.com/aws-amplify/amplify-js-samples/tree/main/samples/react/auth/authenticator        
+    // amplify.Storage ftw - find how to create bucket on signup itself
+        - they say it's not safe to give permanent write access to s3 bucket to end user
+            - get temporary creds with one-time manual step per user. 
+                - 
+        // nope, not needed. - easier to createIfNotExist instead
+            Key: [this.signedInUser.username, this.signedInUser.userId, now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), file.name].join('/'),
+            - means this needs access management on server side 
+                - but there's no server!
+                - doing it in FE is pointless, request can be modified
+                    - these ppl are doing it - https://github.com/tensult/ngx-s3-upload.git 
+                        - they'd rely on userId not being exposed?!
+        
+        // - Here it is: using User pool with "variables" in its resources.
+            > This policy allows access only to objects with a name that includes cognito, the name of the application, and the federated user's ID, represented by the ${cognito-identity.amazonaws.com:sub} variable
+            - Note that putObject only needs a Key and has no requirement of whether the (user's) folder exists.
+                - so, just attaching the identity var based policy to the identityRole should do the job.
+            >> So, let's get a user auth provider who'll sign up in the above user pool(configured using amplify update auth)
+                checking out @aws-amplify/ui-react
+                Yep, this is the current latest way - https://docs.amplify.aws/ui/auth/authenticator/q/framework/react#basic-usage
+                    ref: https://teachmyselfcloud.com/post/aws-amplify-cognito.html
+                
+           // > instead of S3.put(), you can use Amplify.Storage.put()
+                // > first do amplify add storage.
+                > turns out the level: 'private' follows just this cognito-identity.
+            
+            > Find how the graphql layer will authorize the user.
+
+5 Apr 
+Now p-limit 
+    > do it for a mock call in the dnd app
+    > const imageGroups contains your image files grouped by folder.
+        > now have them mapped into a promises map. The promise should upload to s3(and eventually process them in same call too)
+            > image.preview stays, new added are 
+                image.uploadPromise
+                image.processPromise
+                image.s3File
+                    > the thumb should update s3 path after this.
+                    > later clean memory of the file url too : URL.revokeObjectURL(file.preview)
+            // > use usePromise hook 
+                // Nope, it works for fetch but other network calls need to support abort signal > even better is to use abortable async hook (to cancel bulk operation later on)
+                    https://github.com/dai-shi/react-hooks-async
+
+> Where should the promises hit?
+    > Hitting s3 directly would skip on making DB entries 
+        > creating a Response entry, enabling listing user pictures/responses by groupId, along with their template json string)
+        > amplify se bana lo ye bhi
+                type Picture @model @auth(rules: [{allow: owner}]) {
+                    id: ID!
+                    name: String
+                    owner: String
+                    visibility: Visibility
+                    file: S3Object
+                    createdAt: String
+                }
+            > understand CreatePicture mutation
+                > everything's a json locally which is deployed in cloud
+                > some custom directives like @model make it simpler than type-graphql?!
+                    yep there's @connection for orm
+                    https://rangle.io/blog/creating-a-useful-graphql-server-using-aws-amplify/
+            > figure out where to position your s3 calls
+
+And gallery code final (fetch calls)
+    > amplify got it all -  https://docs.amplify.aws/ui/storage/s3-album/q/framework/react
+
+Write the schema using amplify directives for now. 
+    > later you can find alternatives if this doesn't work out well for scale/automation
+        > one visible drawback was there's no 'total' in paginated output
+        
+Attempt local schema
+    > https://relay-example.adeira.dev/local-form
+
+14-15 Apr 
+    // removed thunk > make processPromise work correctly
+    The Run button.
+        > Clicking again shall bulk rerun?
+            > yes it makes sense if the default template has updated 
+            > give a checkbox to use fallback template json
+            > should be cancellable as it's a bulk job 
+        > Consider that a bulk call will be in-place later 
+            > code in a way so as to get an array out.
+                > so is using a map feasible?
+            > Later one can add selection and deletion/add more before clicking the run button
+
+    The retry button 
+        edit json functionality
+        retry and save 
+
+    Template AutoSave enhancement
+        > Load existing template from given key.
+
+
+18 Apr 
+    > User flow between initial screen and list responses screen    
+        > Initial screen is the only way to make db 
+            > createOrUpdate in db(as part of same transaction) to avoid duplications 
+            > array of objects for bulk operations 
+                > consider that 10000+ images are supported 
+                    > baad me batching krna hoga.
+
+        > use redux - so as to update a global store with each image's state 
+            //nopes > also to save rerenders on a single image's update i.e. avoid unnecessarily keeping state(array) in parent
+                > the network call anyway shall trigger only if the props change(which they won't )
+            > subscribe shall do this for us.
+            
+26 Apr
+// help ppl from discord
+
+27 Apr
+    > That batch action is discarded for now. Because it's causing mental blocks
+    > Just think of making a full fledged gallery with DB entries and createOrUpdate based on file path
+        > this is basically Folder sync with some extra parsing later 
+        > redux dispatch n subscribe ftw here?
+            > What actions shall exist for this 
+                > payload will have the filepath and the file object 
+                > dispatch "upload", which'll dispatch "process" on "upload_failed" and set a flag on "upload_failed" ... - Much cleaner
+                    > there must be a redux batching for later applications 
+                > dispatch "run"
+                    > all filepaths subscribe to this, but those with a selected flag dispatch the "process" again(or retry upload if a flag was set due to "upload_failed")
+            > Now let's see redux examples to find out how correct we are 
+                > The async example seems close: 
+                    This example includes reading from an asynchronous API, fetching data in response to user input, showing loading indicators, caching the response, and invalidating the cache. It uses Redux Thunk middleware to encapsulate asynchronous side effects.
+                    https://redux.js.org/introduction/examples#async
+
+    > Later work separately on selection methods 
+        > (find that google photos area select mechanism)
+    // > dropping again should merge the maps
+
+
+1 May 
+Attend to one more issue in discord
+    >[IDEA] there should be a blob detection inside the squares!
+        - this is much better than taking whole average
+        - but again what's the black threshold you'd take... 
+            - leave it to the algorithm
+                - naah for xerox cases it would actually increase the darkness and give wrong output?
+                - then choose an algorithm that doesn't increase the darkness
+    >[IDEA] Psychology says it's better to apply the globalTHR algorithm to a single QBlock
+
+    >> Okay better to visit them later. Keep main goal in mind
+
+2 May
+    > Something significant for today: 
+        > Redux enough knowledge to comment about it.
+            > It is optimised, despite maintaining a global state... Does save rerenders.
+
+        > https://changelog.com/posts/when-and-when-not-to-reach-for-redux
+            So if the only thing you needed to do with Redux is avoid passing data as props through 15 levels of your components - well, that’s literally what Context was invented to do.
+            So, if that’s all you need, then you don’t need to add Redux just to add that capability; use Context instead.
+    
+    > So, answer this survey: 
+        > What is the problem you want to address here?
+            - Writing a bulk action trigger, and conveniently show status indicators and individual retry buttons 
+        > How you think might redux help in solving this problem?
+            - there are certain events(uploaded, processed, db entry made) on completion of which we can use a "dispatcher" to update the relevant state.
+            - remounted components still should not send a network call, or get a cached response if they do (for non-gql calls too like amplify.Storage.put).
+
+11 may 21
+redux
+    > how about using the components as dumb indicators
+    > all the processing actions could be put into the reducers 
+        > the statuses would then be either subscribed or 
+        > redux-async example
+            > status passed as props to the container mapStateToProps(initial)
+            > postsBySubreddit[post].isFetching - updated in reducers
+                > another action dispatched here.
+                dispatch(requestPosts(subreddit))
+                return fetch(`https://www.reddit.com/r/${subreddit}.json`)
+                    .then(response => response.json())
+                    .then(json => dispatch(receivePosts(subreddit, json)))
+                > must need the global map here...
+                    > it shall include db entries too 
+                    > then why couple it?
+                        > better to just upload, no batch run on home page...
+                            > then redirect to responses page 
+                            >> Note: there's that result exporter to be made too 
+                        
+15-16 May - Application day  
+    > async redux 
+        > Main goal is to separate mounts/rerenders from network calls 
+            >> network calls should trigger via redux as soon as files are dropped and the button is ON 
+                > When the components in collapse opens and mounts the indicators, they should just show latest status.
+                    > plain approach is to use react-redux's connect() that gives us the store access which is mapped to props using mapStateToProps
+                    > more decoupled approach is to use saga 
+                        > saga pattern origin https://www.youtube.com/watch?v=xDuwrtwYHu8
+                        > pro-saga blog https://riad.blog/2015/12/28/redux-nowadays-from-actions-creators-to-sagas/
+                        > okay, are there utils to further simplify the code (common states be handled internally)
+                            > Yes, https://github.com/afitiskin/redux-saga-routines
+                        > or starter codes definitely exist
+                            > time to link dump!!
+                            > let's also search 
+                                > bulk async actions using saga
+                                > file uploads using saga
+                                    tadaa - https://stackoverflow.com/questions/56530161/how-do-i-implement-a-batch-task-in-redux-saga-with-limited-concurrency-and-sane
+                                > logging and debugging
+                                    - study how it's done in mindtickle?
+                                        > naa let's do by self rn, for debugging or refactoring we can study this later
+                                        > but logging could be important for learning   
+                                            > still don't start from there. or find your own sagaMonitor
+            ** BUT TODAY'S GOAL IS TO BRING PRESENTABLE CODESANDBOXES 
+                > these sandboxes should demonstrate different approaches to display single async indicator
+                    > approaches to focus on how it decouples api calls from indicators
+                    > approaches are:
+                        > plain react-redux -
+                            https://stackoverflow.com/questions/34570758/why-do-we-need-middleware-for-async-flow-in-redux/34599594
+                        > redux-thunk aka redux async
+                            https://codesandbox.io/s/github/reduxjs/redux/tree/master/examples/async
+                        > redux-saga 
+                            > must have a huge debugging overhead
+                                > but it's better than redux thunk to manage.
+                            > It easily integrates with redux
+                            https://codesandbox.io/s/zkqzadrjz?file=/reducers/index.js
+                            
+
+                            https://stackoverflow.com/questions/34930735/pros-cons-of-using-redux-saga-with-es6-generators-vs-redux-thunk-with-es2017-asy/34933395
+                        > redux-dispatch-subscribe
+                        > ... 
+        > put placeholders
+            > yes, now that saga is finalized, first chart out what should be used and where it should be placed
+                > where shall the files parsing happen? as it would change where parsedState will be stored
+        > separate uploading and processing?
+
+
+        **feature req - > open blob in gallery and show indicators there as well
+        ** More Learnings
+            > https://redux.js.org/tutorials/fundamentals/part-6-async-logic
+            > https://github.com/slorber/redux-dispatch-subscribe
+                > Because it's a very simple solution to listen for dispatches and react to them.
+                >> This gives an insight that react-redux on itself gives a props-based approach to listen to actions
+            ** Saga knowledge:
+                Finally, Redux Thunk and friends is just one possible approach to asynchronous requests in Redux apps. Another interesting approach is Redux Saga which lets you define long-running daemons (“sagas”) that take actions as they come, and transform or perform requests before outputting actions. This moves the logic from action creators into sagas. You might want to check it out, and later pick what suits you the most.
+                
+                This discussion has all the answers
+                https://stackoverflow.com/questions/34570758/why-do-we-need-middleware-for-async-flow-in-redux/34599594
+
+                Origin of saga is from the backend, specifically it was used for distributed transaction
+                    > The saga concept removes the need for a distributed transaction by ensuring that the transaction at each step of the business process has a defined compensating transaction. In this way, if the business process encounters an error condition and is unable to continue, it can execute the compensating transactions for the steps that have already completed. This undoes the work completed so far in the business process and maintains the consistency of the system.
+
+            ** Snowpack is cool to use in browser demos (esm modules ftw)
+                > https://rickbutton.github.io/record-tuple-playground/#eyJjb250ZW50IjoiaW1wb3J0IFJlYWN0IGZyb20gXCJodHRwczovL2Nkbi5za3lwYWNrLmRldi9yZWFjdFwiO1xuaW1wb3J0IFJlYWN0RE9NIGZyb20gXCJodHRwczovL2Nkbi5za3lwYWNrLmRldi9yZWFjdC1kb21cIjtcblxuXG5jb25zdCBIZWxsbyA9ICh7dXNlcn0pID0+IHtcbiAgcmV0dXJuIDxwPkhlbGxvIHt1c2VyLm5hbWV9PC9wPlxufTtcblxuY29uc3QgdXNlciA9ICN7bmFtZTogXCJTZWJhc3RpZW5cIn1cblxuUmVhY3RET00ucmVuZGVyKFxuICAgIDxIZWxsbyB1c2VyPXt1c2VyfS8+LFxuICAgIGRvY3VtZW50LmJvZHksXG4pO1xuXG4iLCJzeW50YXgiOiJoYXNoIiwiZG9tTW9kZSI6dHJ1ZX0=
+
+            > generator functions are cool way of writing state machines
+                yield can do stuff similar to async, rather much powerful
+                    > yield can send data from interpreter back to the generator!
+                        > https://www.youtube.com/watch?v=Em2jqwROdZc
+                            > Co-routines
+
+17-18 May: Decided to do it all on paper.
+    > Listed all saga actions 
+        `DROP_FILES`
+        `CLEANUP_OBJ_URLS`
+
+        image status 
+            > INIT 
+            > createRoutine(`UPLOAD`)
+            > createRoutine(`PROCESS`)
+            > createRoutine(`GET_IMAGE_URL`)
+                // nope, might need to refetch later > should merge with UPLOAD?
+                
+        `SELECT_IMAGE`
+        `SELECT_GROUP`
+        `SELECT_ALL`
+        `UNSELECT_IMAGE`
+        `UNSELECT_GROUP`
+        `UNSELECT_ALL`
+        `PROCESS_SELECTED`
+            > macros
+                `PROCESS_GROUP` = `SELECT_GROUP`;`PROCESS_SELECTED`
+                `PROCESS_ALL` = `SELECT_ALL`;`PROCESS_SELECTED`
+            > note: 
+                > REPROCESS action is nothing but ignore current image status and do PROCESS_IMAGE on it (validate its uploaded)
+                    > rather let's have separate uploadStatus, processStatus so that we also keep room for other statuses
+
+        `CANCEL_SELECTED`
+            > macros
+                `CANCEL_GROUP` = `SELECT_GROUP`;`CANCEL_SELECTED`
+        
+        // later 
+            >`REMOVE_IMAGE`
+            >`REMOVE_SELECTED`
+            >`SELECT_RANGE`
+    
+    > Listed all reducers for these actions
+        > note: write them with combineReducers() in mind!
+    > Figured out updated state 
+        > {
+            imagesMap: {
+                [filepath] : {
+                    preview, 
+                    file,
+                    // Nope, need to split, yet invalid state won't come - status,
+                    uploadStatus,
+                    processStatus,
+                    signedUrlStatus,
+                    isSelected,
+                    hasReprocessed,
+                    inputImage, // should be s3 key as the API creates an expirable url here.
+                    templateJson,
+                    outputImage,
+                    readResponse,
+                }
+            },
+            groupsMap: {
+                [groupId]: {
+                    //[Blunder] No!! not if it needs updating! -  it's just references.
+                    //images,
+
+                    // yes this shall allow using latest value from imagesMap
+                    imagePaths,
+
+                    //template is fine as it is not changing/getting uploaded
+                    template
+                }
+            },
+            templatesMap: {
+                [filepath] : {
+                    json,
+                    file,
+                    // not needed [THINK] -  status,
+                    
+                }
+            }
+        }
+    > There will be two main pages  
+        > upload & process workspace
+            > state, sagas and reducers figured out here 
+            > grouping happens based on default logic of path prefix
+            > similarly templateJson is derived on default logic of path prefix
+        > groups/albums page 
+            > state specs 
+                > need to 
+                    > list all groupers 
+                    > fetch single grouper images({s3Url, readResponse, templateJson})
+                        > **feature: later images should be locally searchable from their readResponse string (roll number etc)
+                    > reprocess any image/selection of images
+                    >**The main differences from other page
+                        > no uploading part
+                        > shows previously uploaded images and their groups
+                        > grouping happens based on db entry only. (shall later allow for changing group)
+            > seems like there's no extra action needed for db entry status as process call is expected to do it
+                > when marking {status: PROCESSING_SUCCESS}, also update state with the response containing the readResponse, templateJson, outputImage, stepsImage, hasReprocessed
+
+    > Searching again for existing projects that use redux-saga now
+        > naah... none talk about multi-select leave alone actions on them
+    
+    > Think on issues with keeping `templateJson` with image 
+        > how will we bulk change templateJson used when re-processing?
+            > Understand that the templateJson in db is only for record keeping 
+                > it shall be used as a default value for filling the json editor for that group reprocess.
+        
+        >> [New thought asked by design] No template is to be uploaded?!
+                        > wait, each template will be repeated per image then...
+                            > yes that's fine because the bigger overhead is it's a separate network call
+                                > more incentive for batch action 
+                                > you'd save a few milliseconds per call and uploading template complicates the process
+
+        > Looks like it's sorted now 
+
+    > Okay now only one major unknown area: the GQL side (evaluation, analytics etc currently out-scoped)
+        > shall I first implement the sagas fully instead?
+            > yep, mocking them is easy. Should be more productive than jumping into new area
+        > so then just listing the questions currently in mind 
+            > What should be the responsibilities of the GQL middleware?
+                > creating DB entries 
+                    > for processing images 
+                        > doing the lambda call
+                        > creating db entry with the returned {readResponse, templateJson, outputImage, stepsImage,} and derived/inputted {inputImage, hasReprocessed, groupId }
+                        > later supporting a bulk action here.
+
+                    > for changing image group  
+                    > for deleting a response 
+                    > for updating a response 
+
+                // Nope > abstractifying the S3?
+                    > no, because amplify already did it and provided a user specific configuration from its auth data
+
+
+18 May 5:44pm - Implementation steps 
+    // > first have a boilerplate for async redux sagas with createRoutine
+    > now create the state, and then start writing their reducers
+        > rather first copy over that boilerplate into your existing project
+            > then first you need to update the state and its consumption _// 
+                > it's an effort though, imagesMap instead of imageGroups here.
+                > DROP_FILES done with new state
+                    > now let's consume it write required parts for it
+    >> Reducers need to be imported to entry point createStore!!
+        > how to colocate code then...
+            > ofcourse you'll use combineReducers, but
+            > how to handle imports from various paths?
+    > change to useSelector now
+        > also test and use createSelector here.
+    > noted again: aws-amplify has created S3Image component to handle the object url 
+        > trying to understand how it gives loaders 
+        > also turns out it has an uploader in it using body prop 
+            > but leaving it... as it seems pretty less documented and my usecase is custom as always
+        > https://docs.amplify.aws/ui/storage/s3-image/q/framework/react#props-attr-amplify-s3-image
+    More learnings:
+        > saga vs redux boundary clarification talk
+            // (uploadTriggerReducer) fire that s3 promise 
+                - wait... this is supposed to be done in saga! Make use of the asyncGeneratorRoutineUtil
+                - but the status update needs to be done here...
+                - yeah well saga is a middleware, it will dispatch something to reach the reducer anyway...
+                - is that why we have Trigger and Request separate!
+                - yeah looks like so! use Trigger action for reducer update, Request action for saga invocation
+                    - naah, middlewares forward the actions too, so BOTH can use TRIGGER here.
+                    - but you set the convention... let's let REQUEST update the status then.
+                    - what about the case of uploadLimiter?
+                        - the state updater should not be aware of this part... so showing a loader since the start is recommended
+                - TRIGGER -> REQUEST -> SUCCESS / FAILURE -> FULFILL
+        
+22 May 21 
+    > continue with completing the redux-saga action cycles
+
+29 May 21
+    > try to finish what you have written in notes
+    >3pm
+        > dispatching another action from an action is possible through saga
+            > it just needs to start from an saga. A saga can call a reducer and wait as well
+                > it can wait for actions using take, but waiting for a reducer?
+            > or people suggesting to use yield select()
+                > You already get the updated state in middleware: 
+                    - "It's important to note that when an action is dispatched to the store, the middleware first forwards the action to the reducers and then notifies the Sagas. This means that when you query the Store's State, you get the State after the action has been applied"
+                > but it gets old state if some other middleware calls next(action) asynchronously (unusual but possible)
+                > also they recommend avoiding it -
+                    - "Preferably, a Saga should be autonomous and should not depend on the Store's state. This makes it easy to modify the state implementation without affecting the Saga code."
+                > but in their example, select() is suggested to be used whenever you need arguments for your mutation:
+                    >   // query the state using the exported selector
+                        const cart = yield select(getCart)
+
+                        // ... call some API endpoint then dispatch a success/error action
+                > The thread:  https://github.com/redux-saga/redux-saga/issues/1330
+        > remember to use createSelector
+
+2 Jun 21
+    > pen and paper for bulk upload triggers (as well as PROCESS_SELECTED)
+        - TODO is: 
+            dispatch this action once the reducer finishes computing new imagesMap
+                dispatch("BULK_TRIGGER_UPLOADS", { payload: Object.keys(imagesMap)})
+          
+        - PROBLEM is: 
+            using yield select() directly would give us the state before this new imagesMap
+            > also note how the saga monitor works... It gets access to updated state correctly
+                - well the bigger problem is how to update the state after reading latest state.
+                ->> why does the saga need to update the state?
+
+        > to access updated state - yield select or yield take?
+            "The resulting behavior of the call Effect is the same as when the middleware suspends the Generator until a Promise resolves. 
+             In the take case, it'll suspend the Generator until a matching action is dispatched"
+             
+             >> yield take 
+                - it also returns something!
+                    "The result of yield take(pattern) is an action object being dispatched."
+            
+            > so a jugaad approach is marking a sequence of takes
+                while(true){
+                    yield take(dropFilesRoutine.TRIGGER);
+                    yield take(NEW_RENDER); //fired by a component
+                    
+                    // const imagesMap = yield select()
+
+                    // bulk upload triggers here
+                    dispatch("BULK_TRIGGER_UPLOADS", { payload: Object.keys(imagesMap)})
+
+                    // here you have first render after the drop files
+                }
+                
+                // btw using the routine for dropFiles is a bad idea it seems,
+                    - bulkUploadRoutine makes more sense
+
+        > there's one more approach to think of -
+            > saga is a middleware, so it can modify the action payload and pass on parsed state!
+                > this is just updating state through payload 
+                    > what's the antipattern here? We do this for updating fetched response in state, 
+                     here instead of fetching we're just parsing...
+                    > the subtle difference is your saga needs access to current state to find the new ones 
+                        > that's why select() is justified
+                        > your worry is an issue of concurrent state updates here...
+                            > for your app atleast this isn't a problem as dropping files is not concurrent
+                            > oof again, the main worry is it can't get the updated state coz it's middleware
+
+23 June 21
+    > let's just jump into the code and figure it out
+        > do the parsing in saga, use yield select for current state
+        now BULK_TRIGGER_UPLOADS will need this state 
+            > right now just pass state.imagesMap as a payload
+        > just pass nextState as response in the drop files reducer 
+            > i.e. we'll be indirectly updating the state using payload
+    >> once this works, you shall try with the reducer in place and consequent saga on the same trigger 
+        > as the saga effect is applied AFTER the reducer(in case of synchronous middlewares)
+    
+        > yep it works, now let's try a better way in next sitting 
+
+25 June 21
+    // > avoid that indirect state update 
+        //> trust on synchronous updates (no further middlewares expected)
+    // > then make sure only newly added images are reuploaded.
+        // no need- presence in state is enough for now > check on status
+        > check on status after db integration
+    // > handle invalid jsons in templates now     
+        // naah, just reject the promise > status shall be invalid template?
+    > now attempt processing the images 
+        > first based on the clicks
+            > click shall be disabled until atleast upload status is done.
+
+28-30 June 21
+    // > extend the logic to processing 
+        > SELECT_GROUP then PROCESS_SELECTED
+    // > create that run button 
+        > let's just have select group button at group level 
+        // > and single run selected button at the top.
+        // Naah, made it controlled >> Need to change from Collapsible now anyways, let's move to a google photos like look
+            > Still, let's have the Sider later 
+        // > Write selection logic first!
+            > Group-level and image-level checkboxes
+                > Update isSelected, isGroupSelected and isAllSelected at end of all selections efficiently.
+                    > much more efficient would be to maintain a count as there's no deletion yet.
+                    > naah, it's fine as it's just a read operation.
+                // > Decision around `imageToGroupMap` 
+                    - by this logic we should have imageToStatusesMap
+                    - and consequently imageToDynamicValsMap
+                        - supposedly this shall save on copying static vals 
+                            - but it doesn't save renders 
+                            - anyway you shall later make use of Profiler and fix only the large pain points
+                    _// - merging it with imagesMap is also fine 
+                        - considering that DB entries will come later, it's better this way.
+                            - groupsMap shall be derived from this later on.
+            // > Time to make PROCESS_SELECTED
+                > ** again faced template parsing issue - need to have the invalid json status up until process mode.
+            
+            > Now make sure the top button only runs those which are not triggered yet.
+                // > update filter 
+                // naah > disable the button until current process doesn't finish?
+                    _// > naah user may want to add more while it's processing.
+                        > in that case the indicator should update the filtered count etc
+                            > how shall it remember the first selection?
+                                - yeah a state needed storing count of current triggered jobs
+                                    - Use multi progress to show non-triggered vs triggered vs success!
+
+            
+    // > full screen dropzone
+        > opacity does the job (not display/visibility)
+    
+    // > Now fix this issue -
+        0.chunk.js:78600 Uncaught (in promise) TypeError: fn.apply is not a function
+            > Coming even when just dropFilesReducer is on
+            > It's coming from parseFileToTemplate
+                > It's cause the limiter expects a function that returns a Promise 
+
+    > Now can make that modal to edit the json before manual edit 
+        > edit template for now, later pickup config.json instead?!
+    
+    [Optimisation] 
+        Scale check: Quite laggy without the scroll pagination right now
+        > Need indicators at this level of slowness
+            // > Show count on groupsMap
+            > Show that upload count side popup
+            > similarly show progress indicators
+                > One for global process selected call(filtered total)
+        > Why collapse is laggy for other image groups?
+            > must be re-rendering other groups?
+
+        > Selection: can we update the global count in async?
+            > sure, convert the reducer into saga
+            > And we probably need a separate map for selection here.
+            
+        // > Data uris are unnecessarily big 
+            // > resize them at start
+                > https://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas
+                >> The collapse opening is faster now (still takes 3-4 seconds but better than before)
+            
+        > [Later] also you should resize them before upload too!
+            > for now let users keep their images resized at their end
+
+    Later 
+        > Show groups on the sidebar and make thumbnails bigger 
+        > parse template.json to hide omr_marker
+        > Maybe use drag and scroll style multi select
+            https://codesandbox.io/s/viselectreact-sbn83?file=/src/App.tsx
+
+2 Jul 21
+    > Progress indicators first, optimisations later(do use profiler for that!)
+        > design phase: decide what things to show 
+            > from addedImagePaths
+                // okay but that's not the origin > total = addedImagePaths.length
+                > the origin is number of triggers!
+                    > total++ on trigger, success++ on success etc
+                > statusWiseCount be generic technique
+
+            _//> status-wise count thru saga and 
+                just show it in antd Progress 
+
+19 Jul 21
+    - Template Designer on the moves
+        - just work on it
+        - codesandbox continue?
+            - naah that was copied down into drafts
+            - Better to revisit the specs!
+        // Nope, its good for thinking, action should not immediately be taken on something that already works >> So first task today is to change the template json format 
+            - bigGaps is pointless
+            - gaps, origin etc was okay for handwritten ways 
+                - if we have the UI anyways, best to directly have array of coordinates
+                - makes qNos pointless
+            - Singles is pointless
+            - move concatenations to options
+                - ideal place is responseProcessors
+                    - coz marking scheme can also go into this later.
+        - Now directly jump on making this layout
+            - Current template designer WIP: https://codesandbox.io/s/nice-star-672j5
+            
+            - Changes in this are: have tiny bubble groups that spawn and are droppable
+                // Noooo, better to save the state directly as json field- all bubble groups are parsed to produce array of coordinates
+                    - a major drawback to this is it cannot be read back and grouped.
+                    _// - rather the state shall be saved as-it-is 
+                - each group shall have:
+                    - gaps adjustment
+                    - QTYPE presets containing
+                        - vals (bubble group) 
+                        - orientation (should also be part of bubble grp)
+                            >> best is to get them at relative start position as well!
+                                >> generate at compile time?
+                                    // naah, we shall allow group-wise column naming > the 3 level nested qNos would make sense here at 2 level...
+                                    > our presets shall have growth perpendicular to orientation 
+                                        > a growth button needed
+                                >> gaps logic shall still work 
+                                    - one gap is within the group 
+                                    - other gap is between the groups 
+                            - just the bubble group should have the 'sticky logic'
+                - should concatenations be part of template designer?
+                    - yes cause otherwise the user won't get how to mark two columns to be part of one 
+                    - so how should user tell this?
+                        - safe to assume they are adjacent?
+                            - yeah, even if they aren't the user would expect them separate in the output 
+                            - then the preset shall include concatenations!
+                                - but how it'd handle varying length cols?
+                                - [array subset selection interface] == for a bubble group
+                                    - can make this visually accurate!
+                                    // Naah, just use range selector perhaps - CSS tricks FTW
+                                - each array be tagged with groupIndex, 
+                                - there should be a popover input to name a group 
+                            >> So we're implying that "a bubble group" denotes a single column in csv(includes concatenations).
+                                - "a bubbles preset" may contain multiple bubble groups.
+                                - frontend state indicates an array of bubble presets(including custom ones in future)
+                                    - a user may delete a bubble preset or a bubble group as well(24 questions case)
+
+                - WIP link https://codesandbox.io/s/gallant-bubble-presets-z3f8n
+
+23 Jul
+    > How should user set the gaps?
+        > two sliders for bubblesGap, groupsGap
+    > ** array of points also means each point has its val. and q_no (pickup the python class)
+        type Point = {
+            x,
+            y,
+            q_no,
+            val,
+        }
+    // yeah they practically ineffective > big_gaps won't be processed now (later remove it from code. for now have 2-level nesting only)
+
+5 August 2021
+    > carry on with bubble preset code
+        > the gap sliders
+            // > attach to bubble gaps 
+            // > show them on hover
+            > move them to an edit button 
+                // naah > with a draggable popover?
+                > better to have a singleton sidebar.
+                    // > will need state uplift.
+                        > yeah that makes sense for "Copy" button later!
+                    > add edit button on hover, clicking which sets the editPresetDetails
+                    > can also change bubble type right away!
+                        > on changing this dropdown it should forget previous gaps?
+                        
+16-19 August 
+    > draggable grid layout done.
+    > edit/plus/minus buttons done. 
+    > now read coordinates
+    > then implement copy/delete buttons
+
+21 August 
+    > taking it offline, csb is crashing.
+        > nah it was issue witg RGL not handling divs with keys
+
+4 Sep
+    // y coordinate issue 
+    > it's not as big as the main problem. You can use css jugaad later.
+
+    now 
+        template buttons to drop new question groups into 
+            > simple reducers for these actions 
+                // > first need to break down setAllConfigs
+                    > but it is dynamically added, has to be in a single parent state
+                    // > just separate layout
+                
+                > then convert this into a reducer
+                    <ConfigProvider value={{ allConfigs, setAllConfigs, layout, setLayout, editKey, setEditKey }}>
+
+        and save/load it from a remote json 
+
+
+10, 12, 14 Sep
+    > so the actions are increasing, introducing reducer for adding/cloning a preset.
+        // > just the editKey first
+        // > now the add question group button.
+            // > new gridKey and questionNames
+            // > move questionNames generation to defaultConfig.
+        // > clone a questionGroup 
+        // > delete a questionGroup 
+    
+> Noted issues:  
+    > the grid layout is much interactive. moving one part near one is moving another.
+        > preventCollision : true
+        > also needs more finetuning later 
+            > for now keep the image at 200% size
+    > 
+
+13 Oct - // 17 Sep
+    > Now add the background image feat 
+        > image scale slider
+            // > resize to fixed width on drop 
+            > scale relative to that fixed width
+        
+        > correct img overlay
+        > correct dnd overlay
+        // nope > the slider scale should also scale the template?
+            > in that case better to use zoom in iframe, or let user use browser's zoom
+            > naah the chosen dimensions go in json. 
+                // > then on rescaling we shall show the new dimensions in the tooltip
+                > for user friendly purpose, the image scale should be rarely used. bubbles be resized instead.
+        > phir bs algo lagana h xD 
+            [later] > might even work when live dragging it over the image!
+    > Then the autosave hook for the json - use s3?
+        > show json in hidden checkbox
+
+28-30 Oct 
+    > continue with above: 
+        // > widths tuning
+        // temp > css fixes!
+            > temp fixes to make it better.
+        > json display 
+            > translation to old format?
+                > yes each grid layout maps to a QBlock, it's just about renaming the keys
+                    >> But slight changes needed in old format-
+                        > bubbleDimensions moved to individual block
+                        > bigGaps is unused
+                        > qNos should be flat now for each block 
+                > later the UI may support configuring pre-processors
+                // > how to map the grid's [x, y] to exact pixels?
+                    > rather use dom scroll positions?
+                    > css translate() property has the data, but still use computed style.
+                        > We have this event: onLayoutChange, or const onDragStop= (layout, oldItem, newItem, placeholder, e, element)=>{
+                        > but onmouseup looks better as it allows managing setConfig easily at child level instead of root grid.
+                            >> but initialization still needs to be done!
+                            > better to keep it at onLayoutChange and use query selectors for the few qBlocks
+            
+            // > parsing to new format 
+                > add a temp copy below this one to replicate your drag and drops.
+                    // > parseTemplate
+                    // > generate the bubblegrids without react grid layout!
+                        > then maybe don't use RGL if its redundant (but snapping is necessary!)
+                // >> store image dimensions along with it!
+                    // > dimensions key
+                > do everything else before trying to run your algo offline!!
+        
+            > bugs to fix 
+                > no rerenders with nested config updates?
+                    > can simply use deepEqual
+                [spec miss] > generated json has no control over question numbers
+                    >> better to have a mapping input per qblock _// 
+            
+            > enhancements needed 
+                // has alternative > reducing option numbers in a qBlock 
+                    > better to make entry of qType, but users may find it confusing for roll number type situation (JE)
+                > users will want undo/redo steps. Redux time machine shall make it easier
+                [later]> a scale to resize all bubbles too 
+                    > essentially scaling origins, dimensions and gaps by same factor
+                        > but need floats in order to fight round offs
+                        > can't keep scale separate and calculate at runtime coz user may change one of the dimensions
+                    > then provide a lock scale option
+                [later] > store selected reference image 
+
+                > a global movement knob 
+                    >  if the user forgets about markers 
+                        > they shall upload the cropped image 
+                        > or keep the global knob on top left marker
+                // No, change omrchecker to parse new format > remove the parsing part?
+                    > separate questions array and then keep a source-map of groupings?
+                        > but then it just won't read questions array in edit mode
+                        > yeah, we are allowing one group per question too. That's the parsing alright.
+                > show json and 
+                    > save it to s3 with an indicator
+                > load that s3 json from the user's exam path
+                    > preview it for any new image?
+                        > markers issue
+3 Nov
+    > Interface Queries 
+        > "qNos"
+            > auto-generated qIds and then a mapping interface 
+                    >> show them visibly
+                > unmapped ones will be in blue with id, mapped ones in green with given qNo 
+        > "concatenations"
+            > reorder the mapping only and if qName is same the questions will be concatenated in that order.
