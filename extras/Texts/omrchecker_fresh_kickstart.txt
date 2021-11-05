@@ -1055,7 +1055,9 @@ redux
                         > can't keep scale separate and calculate at runtime coz user may change one of the dimensions
                     > then provide a lock scale option
                 [later] > store selected reference image 
-
+                [later] > horizontal mcq lines...
+                [later] > custom qTypes shall be passed from template itself 
+                [later] > restrict bubbleDimension sliders to stop overlap
                 > a global movement knob 
                     >  if the user forgets about markers 
                         > they shall upload the cropped image 
@@ -1069,11 +1071,65 @@ redux
                 > load that s3 json from the user's exam path
                     > preview it for any new image?
                         > markers issue
-3 Nov
+3 Nov - 5 Nov 
     > Interface Queries 
         > "qNos"
-            > auto-generated qIds and then a mapping interface 
-                    >> show them visibly
-                > unmapped ones will be in blue with id, mapped ones in green with given qNo 
+            // > auto-generated questionIds and then a mapping interface 
+                    // > inner questionNames deprecates, questionIds+questionNamesMap take its place 
+                        // naah, prefix with qBlock number > questionIds need global counter
+                            // ellipsis > shorten gridKey into numbers then
+                                // yes it is, but being tight works > is this coupling? wanting to keep singular id?
+                    // > show them questionIds visibly
+                    // css later >> ellipsis on questionLabel and cap its box width
+                    > a questionNamesMap will come in parallel to QBlocks
+                        >> mapping interface 
+                            // > first get the array of rows to pass to ObjectArrayEditor
+                                > what happens when user reorders the questions and then adds/deletes a qblock?
+                                    > maintain the order with mapper and for unmapped keys use layout's order.
+                                > what happens when user adds a question to a grid with mapped questions?
+                                    > either gridKey can take precedence in the ordering then inside that we shall have unmapped at end
+                                        > yes this makes sense as we'd give default values to it too.
+                                        > this does mean that removing the question loses its mapping(makes sense too) 
+                                        > then let only gridKey take precedence.
+                                        > so, 
+                                            grids order == from layout
+                                            any questionId that exists in mapper will stay as it is(not part of gridKey groups?!)
+                                                // naah, full reorder needed for roll > or it would mean reordering only within grids
+                            // just 2 > now think of the columns needed 
+                        // > update parsing for this 
+                        > some new bugs 
+                            // > weird globalQuestionNumber not working?!
+                                > it could be from second render of the grid by RenderTemplate
+                                > yes, a missing dependency: configs, but still the behavior was weird
+                            // ignored > delete grid gives "TypeError: Cannot read properties of null (reading 'parentElement')"
+                                > occuring randomly
+                        // >> now use redux 
+                            //todo: get from store
+                                const questionNamesMap = {}
+                    // added border > unmapped ones will be in blue with id, mapped ones in green with given qNo 
+                    
         > "concatenations"
-            > reorder the mapping only and if qName is same the questions will be concatenated in that order.
+            _// > reorder the mapping only and if qName is same the questions will be concatenated in that order.
+                    > same key implies ordered array across questions something like queryParams
+                >> change parsing logic in OMRChecker
+                    > or do it all in browser :p 
+            [now use only when needed]> clicked a better idea than reordering the mapper now!
+                > array syntax - roll[0], roll[1] etc 
+
+    // > use redux to store, read and update mapper
+    > last functional parts of template designer: 
+        // > save and load it as part of templateJson
+        // patched > loading from json will cause globalGridNumber or globalQuestionNumber to collide with json's question ids.
+            // naah > store them in json as well!
+            // naah > both shall be initialized to a count based on 
+            // > use a do while loop to get non-colliding hash(linear lookup)
+        
+    > Let's have a try at reading the imageData
+        > in-browser has issues?
+            > page contours, template matching will be soo time taking..
+                > only basic normalized image and histogramed response detection is feasible that too with much code.
+                > Look what's up! opencv.js is here!
+                    > let's try it out separately
+                        > check contours and all effects u need
+                            > matchTemplate, findContours, 
+                    > if it looks promising, check how much code it is for you to migrate.
