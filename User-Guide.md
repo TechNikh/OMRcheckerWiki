@@ -106,22 +106,26 @@ For more templates see [sample folders](https://github.com/Udayraj123/OMRChecker
 
 To understand how rest of the parameters work in template.json, checkout [About Templates](./About-Templates)
 
+### Note for capturing using mobile phones
+
+Please check the `sample1/` folder to understand the use of `omr_marker.jpg`. If you can modify your OMR sheets with these markers, it will give you much higher accuracy when scanning using mobile camera.
+
 <!-- 
 	1. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust SheetToMarkerWidthRatio in globals.py 
 -->
 
 <!-- bummer: do not change the header text as it's linked -->
-## Run the code
+## Running OMRChecker
 ```
-python3 main.py [--setLayout] [--noCropping] [--autoAlign] [--inputDir dir1] [--outputDir dir1] [--template path/to/template.json]
+python3 main.py [--noCropping] [--setLayout] [--autoAlign] [--inputDir dir1] [--outputDir dir1] [--template path/to/template.json]
 ```
 Explanation for the arguments:
 
-`--setLayout`: Set up OMR template layout - modify your json file and run again until the template is set.
-
 `--autoAlign`: (experimental) Enables automatic template alignment - use if the scans show slight misalignments.
 
-`--noCropping`: Disables page contour detection - used when page boundary is not visible e.g. document scanner.
+`--setLayout`: Set up OMR template layout - modify your json file and run again until the template is set.
+
+`--noCropping`: Disables page contour detection - used when page boundary is not visible e.g. document scanner or a close up capture.
 
 `--inputDir`: Specify an input directory.
 
