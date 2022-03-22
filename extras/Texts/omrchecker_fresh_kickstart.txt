@@ -413,7 +413,7 @@ Attend to one more issue in discord
             - leave it to the algorithm
                 - naah for xerox cases it would actually increase the darkness and give wrong output?
                 - then choose an algorithm that doesn't increase the darkness
-    >[IDEA] Psychology says it's better to apply the globalTHR algorithm to a single QBlock
+    >[IDEA] Psychology says it's better to apply the globalTHR algorithm to a single qBlock
 
     >> Okay better to visit them later. Keep main goal in mind
 
@@ -1005,7 +1005,9 @@ redux
                 // > then on rescaling we shall show the new dimensions in the tooltip
                 > for user friendly purpose, the image scale should be rarely used. bubbles be resized instead.
         > phir bs algo lagana h xD 
+            > NO! the normalization, morphology etc transforms are very crucial for even decent accuracy
             [later] > might even work when live dragging it over the image!
+
     > Then the autosave hook for the json - use s3?
         > show json in hidden checkbox
 
@@ -1016,7 +1018,7 @@ redux
             > temp fixes to make it better.
         > json display 
             > translation to old format?
-                > yes each grid layout maps to a QBlock, it's just about renaming the keys
+                > yes each grid layout maps to a qBlock, it's just about renaming the keys
                     >> But slight changes needed in old format-
                         > bubbleDimensions moved to individual block
                         > bigGaps is unused
@@ -1049,19 +1051,25 @@ redux
                 // has alternative > reducing option numbers in a qBlock 
                     > better to make entry of qType, but users may find it confusing for roll number type situation (JE)
                 > users will want undo/redo steps. Redux time machine shall make it easier
+                [later] > store selected reference image 
+                [later] > horizontal mcq lines...
+                [later] > custom qTypes shall be passed from template itself 
+                [later] > restrict bubbleDimension sliders to stop overlap
+                [later] //todo: think of need for col_orient - horizontal mcq lines (currently handled by separate qblocks)
+
                 [later]> a scale to resize all bubbles too 
                     > essentially scaling origins, dimensions and gaps by same factor
                         > but need floats in order to fight round offs
                         > can't keep scale separate and calculate at runtime coz user may change one of the dimensions
                     > then provide a lock scale option
-                [later] > store selected reference image 
-                [later] > horizontal mcq lines...
-                [later] > custom qTypes shall be passed from template itself 
-                [later] > restrict bubbleDimension sliders to stop overlap
-                > a global movement knob 
-                    >  if the user forgets about markers 
-                        > they shall upload the cropped image 
-                        > or keep the global knob on top left marker
+                [later] > a resize handle to scale a single bubble grid(and then compute gaps)
+                    > can possibly use css transform magic here?
+                [later] > a drag handle to move the origin too 
+                    > a global movement knob 
+                        >  if the user forgets about markers 
+                            > they shall upload the cropped image 
+                            > or crop page in template designer as well
+                            > or keep the global knob on top left marker
                 // No, change omrchecker to parse new format > remove the parsing part?
                     > separate questions array and then keep a source-map of groupings?
                         > but then it just won't read questions array in edit mode
@@ -1081,7 +1089,7 @@ redux
                                 // yes it is, but being tight works > is this coupling? wanting to keep singular id?
                     // > show them questionIds visibly
                     // css later >> ellipsis on questionLabel and cap its box width
-                    > a questionNamesMap will come in parallel to QBlocks
+                    > a questionNamesMap will come in parallel to qBlocks
                         >> mapping interface 
                             // > first get the array of rows to pass to ObjectArrayEditor
                                 > what happens when user reorders the questions and then adds/deletes a qblock?
@@ -1115,6 +1123,8 @@ redux
                     > or do it all in browser :p 
             [now use only when needed]> clicked a better idea than reordering the mapper now!
                 > array syntax - roll[0], roll[1] etc 
+                    > this would make the table redundant, simply input in the hover labels directly.
+                    > later same input could be extended for verification portal :D 
 
     // > use redux to store, read and update mapper
     > last functional parts of template designer: 
@@ -1131,5 +1141,279 @@ redux
                 > Look what's up! opencv.js is here!
                     > let's try it out separately
                         > check contours and all effects u need
-                            > matchTemplate, findContours, 
+                            > matchTemplate, findContours, warpPerspective, getPerspectiveTransform, convexHull
                     > if it looks promising, check how much code it is for you to migrate.
+            > how does file organization happen?
+                > we want labeled outputs for all images
+                    > keeping it all in-memory will make it super laggy 
+                    > downloading is an option but it'll download soo many files!
+                        > you are already saving on uploading, you can upload processed one to s3 in that case
+                        > there's an API which was recently updated that can write files to local systems directly
+                            > https://web.dev/file-system-access/#creating-or-accessing-files-and-folders-in-a-directory
+                            > it's a first class support than the one you used in gallery approach
+                                https://create-react-app.dev/docs/making-a-progressive-web-app/
+
+6 Nov 
+    > Let's do this! 
+        [later]> get that filesystem api source code and get it working locally!
+        > should first get opencv.js to do your job
+            > how to fight with the urge to refactor? 
+                > don't, it's needed anyways. Just don't get stubborn with single things
+            > till that live reading part.
+                > first start with rewriting core utils and figure out what more changes are needed
+            > problems faced in migration 
+                > VERY LESS documentation (a younger me would give up)
+                    > https://docs.opencv.org/4.5.3/de/d06/tutorial_js_basic_ops.html 
+                    > probably cause it's a wrapper on c++ and the signatures match those with c++
+                > mat.delete() needs to be called at end of each function for all temp mats used!
+                > import cv won't work because it is initialized at runtime.
+                > also have to use new template parsing method in order to test now(doable)
+                > way of using same function is different 
+                    > createCLAHE vs new CLAHE
+                    > signature for cv.putText()?
+                    > clone() return vs copyTo(dest) at many similar places
+                    > no direct documentation, just like python! not even function signatures?!
+                        > can't find how to call morphologyEx!
+                            > here's a good resource: (play at https://codepen.io/huningxin/pen/wqBvRo)
+                                https://raw.githubusercontent.com/huningxin/opencv.js/master/samples/video-processing/js/index.js
+                            > still can't find how to call invert()
+                                > used subtraction for now.
+                    > python can directly use math operators on matrices, js can't.
+                    > python's need of reshape()
+                    > js .sort() does it in-place!
+                    > contour is a mat in js? what is it in python?
+                        > findContours returns a matVector in js, python returns array
+                    > GaussianBlur() only working with kernel size = 3? using 2 is breaking 
+                        >> turns out it needs odd width and height!
+                        cv.GaussianBlur(src, dest, new cv.Size(kernel_size,kernel_size), 0);
+                >
+
+                > necessary refactorings
+                    // > MIN_PAGE_AREA should be percentage of image area 
+                    // > read_response 
+                        // > according to new format
+                        // > should not transform the image at all(except drawing rects)
+
+            > after verbatim migration, this order you should follow to make it work 
+                // > crop page 
+                    > find contours
+                    > convex hull, area etc signatures
+                
+                //>> live feed setup 
+                    // thoda sa > evaluate kitna time lgega 
+                    // done > without tuning controls it should be faster
+                    // > now just get back to making it work for single image
+                        > this part will be useful later for memory leaks and live debugging
+                // > now merge it with template designer (keep thinking towards live tuning )
+                    // added dummy > assume you have the cropped image stored.
+                    // > extract traverse_points util
+                > migrate working read response for templates
+                    // > get new json for adrian template 
+                    // > use it and show overlay using opencv(as part of migration)
+                        // > need to move it to redux 
+                        // origin was mutated > it's shifting at some odd offset?
+                    // > read bubbles 
+                    // json string is fine for now > show a singleton table with filepath as id 
+                        // > but later you'd just want to create a csv export directly 
+                            >  naah for retuning decisions they need table
+                            > but that table needs to be thought through (after directory structure is stablised)
+                [skipped for now] > use crop page on input image before allowing template dragging
+                    // >> conditional page cropping and escaping error cases 
+                    > maybe a validation step for input image 
+                    > Now the image is not correctly cropped
+                        [not in scope] > user should have a tuner to crop page correctly 
+                        [not in scope] > or select the four points
+                    > Let's just ask user to input a proper cropped scan at first?
+                > some refactoring phase 
+                    // > output standardisation - all questions should be present
+                // > remove reordering part of mapper in favor of array notation(possibly 1-indexed)
+                    // > expanded inputs instead of the labels
+                    [later] > needs taking that floating part out 
+                        > question_wise_points and take first 
+                > detect markers 
+                    > migrate CropOnMarkers 
+                    [later] > later think of ways to select a marker
+                        > looks like each plugin configuration needs a workflow 
+                            > we can have a standard marker and if found so prompt the user whether to use it.
+                > memory leaks checking parse 
+                    > use live tuning(and not video feed)
+                    > check copyMat matrices not deleted?
+                > then go to PWA file management
+                    > wrap around this one first 
+                        > recheck if grouping logic fits as-is(redux magic)
+                
+                [later] > then if you get time 
+                    > think around the debugging framework to see the stacks conveniently
+                        > make a framework to visualize the transformations 
+                            > like testing viability of the apply_erode_subtract option 
+                        > want a tuner on that arrow of each transformation step 
+                        > see if tensorflow playground has opensourced something for this
+                    > restructure app into monorepo 
+                        > packages/omrchecker-js 
+                            > there'll be a  need of ajv validator for the template json
+                        > applications/template-designer
+                        > applications/omrchecker
+                    > one more use case from discord users 
+                        > square marker
+                
+10 Nov 2021
+    > This migration run was quite good. The systematic way of doing it in parts was productive
+        > output of git log --oneline
+            ffb896b (HEAD -> migrate-omrchecker) fix: working webcam
+            8abe6f2 fix: working CropPage
+            7d68ada fix: migrations verbatim phase 2 (processors and previous too)
+            ece20f7 fix: migrations verbatim
+            af61b8f fix: migrations in progress, before read response
+        
+    // > read_response for newer template format 
+        //> also removes the parsing layer
+
+11 Nov 2021
+    > Oops, suddenly found some more tutorials 
+        > https://docs.opencv.org/4.5.3/d2/df0/tutorial_js_table_of_contents_imgproc.html
+    
+12-14 Nov 2021 
+    > There's two paths right now
+        > spending time on making that debug framework, 
+            > perfecting all current samples 
+            > simplifying the UI further to make current omr checker work great for any single image 
+        > spending time on finishing first iteration by merging the imageGroups logic and PWA logic.
+            > I shall go with iterations driven by learning incentive.
+                > did the codelabs workshop, slightly helpful but main code is not explained there.
+                    > https://developers.google.com/codelabs/pwa-training/pwa05--empowering-your-pwa#0
+                > got the reply for source code for https://whatpwacando.today/file-system 
+                    > https://github.com/DannyMoerkerke/file-tree/blob/master/demo/js/routes.js 
+                    > checking if it's feasible
+                        > it's a web component, but then it's hard to style and add a selection box to it.
+                        > How should your interface be? 
+                            > Just like the directory browser, being able to "run it in bulk" and see progress 
+                                > can use your imageGroup parsing logic which has the split by separator part.
+                > react's serviceWorker.js
+                    _// > it's easy, first focus on getting the filesystem part with the events you need.
+                    > as such the api is independent of PWA, so focus on the api.
+                        > The core code looks clean and salvageable 
+                            - https://github.com/DannyMoerkerke/file-tree/blob/43b7588ec50895273b70b7ac583cc8a8d815391a/src/file-tree.js#L254
+                            - even the directories part is made using simple <ul> and <li> elements
+                        > let's see if there's a standalone file directory browser in react 
+                            > or just create li elements and style them.
+                            > almost forgot! there are react-tree libraries
+                                > react-super-treeview
+                                    > https://azizali.github.io/react-super-treeview/examples/#async-load
+                                    > although it's nice, the state management seems manual and would not help me focus on bulk ops 
+                                        > Atleast this one has a state, there's a 'react-animated-tree' which expects you to put parent/child components together yourself.
+                                    > I just want a "selection ui". Once I get the directory name, the rest shall run using redux-saga 
+                                        and the directory/leaf components shall look for their progress/loading states 
+                                > _// react-virtualized-tree
+                                    > https://diogofcunha.github.io/react-virtualized-tree/#/examples/large-collection
+                                    > This one looks slick, pretty clean code in usage  
+                                        > https://github.com/diogofcunha/react-virtualized-tree//blob/master/demo/src/examples/WorldCup.js
+                                        > "Being a reactive library it uses children functions to achieve maximum extensibility"
+                                    > checking for async support though...
+                                        > Yeah it's possible.
+                                            https://github.com/diogofcunha/react-virtualized-tree/issues/88 
+                                > Storybook has the tree view too!
+                                    > https://storybookjs.github.io/react-treebeard/
+                                        > the demo itself has async op
+                                        >  although may not perform at scale 
+                                            https://github.com/storybookjs/react-treebeard/issues/245
+                                
+                                > Still I should think through of how things are going to be used here.
+                                    > if we limit seeing only folder names(and counts of valid files in them).
+                                        > I do want to see the filenames 
+                                    > I want to "run" a directory, 
+                                        > click process/abort after clicking on the directory 
+                                            > i.e. no selection, instead preview the templateJson used for this directory
+                                        > see which file is being processed currently (if its laggy then just progress count)
+                                        > see which files are ignored because they match the ignore pattern
+                                            > omr_marker.jpg 
+                                            > output folders and files 
+                                            > Non image/json files
+                                    > I want to configure a limit of files that can be loaded per folder 
+                                        > should cancel the load if it exceeds.
+                                    > I want to preview a file on clicking it 
+                                        > and be able to see the processed output and tune it right there(re-run flow)
+                                            > [question] how do I persist the tuning used for a particular file?
+                                                > also how shall the user reuse that tuning for other files?
+                                                    > you have thought on it, the json needs to be mapped with that image or directory.
+                                                        1. can give an option to update the mapped json and rerun over the folder 
+                                                        2. can just store the result in db and retrieve json from there. 
+                                                            > To rerun on folder update the folder's json
+                                                                > have a prompt on whether to override custom-tuned images.
+
+                                            // Naah, it NEEDS to be loaded from db > [think] Can we put moderation portal in this?
+                                                > but yeah the interface may look similar.
+                                                
+                            > alright, now got to make a poc
+                                > let's add a loader on directory click and add children after a delay.
+                                     https://github.com/diogofcunha/react-virtualized-tree/issues/88 
+                                     > https://github.com/diogofcunha/react-virtualized-tree/blob/master/demo/src/examples/Extensions.js
+
+
+                                    
+14 Nov 2021
+    > Let's use (dormant) pwa template and make a running react-virtualized-tree with the lazy load extension
+        // > prototype done, let's prepare it for taking the filesystem api calls easily.
+        // > stress test it for 10k+ data 
+        // > Own Expand icon 
+    
+    > Closer to integration 
+        > print selected node on the right side 
+            > If it's a directory, show a button to process which triggers the loader 
+                > let loader have count/progress  
+        > file list to nodes parser 
+    
+    > and let's not think about manual tuning or checking. Beta version. 
+    
+    [later] > PWA can also give you "Open with..." option in the right click menu!
+        > window.launchQueue and fileHandlers in manifest.json
+        > Directories don't have this at OS level.
+
+    "preview" pane on side 
+        > onSelect callback
+        > triggerNode(path)
+        > this.runningDirectories = {progress:{}}
+    
+    > time to migrate the file-tree class 
+        > it's just trimming off unused parts 
+        > here's the async part I was prepping for 
+            for await (const [name, handle] of directoryHandle.entries()) { 
+
+20 Nov 2021
+    > let's go top-down for this. Figure out what api calls are needed from this file handler class
+        > openDirectory() : {entries, handler}
+            > this should be stored in indexed db and next reload should ask user if they want to reopen last directory.
+                > thus keeping outputs in user's directory makes sense(images and csv)
+            > rather the whole TreeNodes shall be stored which shall remember expanded state and processed state etc.
+        > listFilesInDirectory(handler, {recursive}) : [{name, entries, handler}]
+
+        > openFileByPath:
+            > readImageAsDataURL(handler) : URL
+            > readFileAsDataJSON(handler) : JSON
+        > createDirectory()
+        > writeFile(DataURL - image/text) : handler 
+        > deleteDirectory()?
+            // last resort > maybe do it externally?
+            // move it to right side using redux > but contextmenu support is there for ease.    
+                > let's keep delete but not create()
+
+    > Now write steps to migrate 
+        > convert actions on this.fileList() into props changes
+        > convert the Object's state into local/redux state
+            > redux because some state better stay with the object and only those exposed outside shall reflect in store.
+                > can it be done?
+                    > well the render causing things are dom changes only. might need to copy them 
+                    > can take inspiration on how to keep state, but the dom logic is pretty much coupled.
+                >> better to just copy the skeleton and write own logic for each function.
+                    > still let's just think on state management
+                        [no, maybe later] > are we going to cache output using the csv?
+                            > in-memory is good enough for now.
+                    > some mapping 
+                        > highlightFile : node.state.highlight 
+                        > 
+
+
+            // > like the fileIndex worker is there to speed up things in background 
+                // naah, it is rather just for search > think of salvaging it 
+
+22 Mar 22
+    > continuing "time to migrate the file-tree class "
