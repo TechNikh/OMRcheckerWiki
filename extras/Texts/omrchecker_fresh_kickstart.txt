@@ -1364,7 +1364,7 @@ redux
     
     > and let's not think about manual tuning or checking. Beta version. 
     
-    [later] > PWA can also give you "Open with..." option in the right click menu!
+    [later] > PWA can also give you "Open with..." option in the explorer/finder right click menu!
         > window.launchQueue and fileHandlers in manifest.json
         > Directories don't have this at OS level.
 
@@ -1381,20 +1381,23 @@ redux
 20 Nov 2021
     > let's go top-down for this. Figure out what api calls are needed from this file handler class
         > openDirectory() : {entries, handler}
-            > this should be stored in indexed db and next reload should ask user if they want to reopen last directory.
+            > [later] this should be stored in indexed db and next reload should ask user if they want to reopen last directory.
                 > thus keeping outputs in user's directory makes sense(images and csv)
-            > rather the whole TreeNodes shall be stored which shall remember expanded state and processed state etc.
-        > listFilesInDirectory(handler, {recursive}) : [{name, entries, handler}]
-
+                > rather the whole TreeNodes shall be stored which shall remember expanded state and processed state etc.
         > openFileByPath:
             > readImageAsDataURL(handler) : URL
             > readFileAsDataJSON(handler) : JSON
-        > createDirectory()
+        > createDirectory() 
+            > for outputs
         > writeFile(DataURL - image/text) : handler 
         > deleteDirectory()?
             // last resort > maybe do it externally?
             // move it to right side using redux > but contextmenu support is there for ease.    
                 > let's keep delete but not create()
+            > rename it to some ignored path?
+
+        // [later] make openDirectory recursive instead > listFilesInDirectory(handler, {recursive}) : [{name, entries, handler}]
+            
 
     > Now write steps to migrate 
         > convert actions on this.fileList() into props changes
@@ -1416,4 +1419,76 @@ redux
                 // naah, it is rather just for search > think of salvaging it 
 
 22 Mar 22
-    > continuing "time to migrate the file-tree class "
+    > continuing "> time to migrate the file-tree class "
+        > Found one more nice UI library. But yeah current focus should be on making the system APIs work.
+            https://codesandbox.io/s/github/anuraghazra/react-folder-tree?file=/src/App.js
+
+        > file-tree.js needs to be mapped into a Component (react-local-file-tree/src/components/FileTree/)
+            > continue on "> convert actions on this.fileList() into props changes"
+                > const newChildren = createDirectoryNode(sampleFileDirectory).children; // todo: native api call here.
+            > Ohkay, not all things to go into component's state!
+                > some things remain with the FileTree class instance
+                    > like currentDirectoryHandle
+                > just dom queries be replaced with state reads.
+            > Then what should be the public methods in this interface?
+                > showPicker
+                > getAllFiles
+                > openFile (now these onwards are covered before)
+            > looks like there's no need of loading the directory async.
+                > but for directory-wise processing?
+                // yeah no priority and solvable 
+                    > but for browsing output and re-tuning?
+                        > give a clear refresh button later?
+                > thus even react-virtualized-tree may be an overkill
+                    > but right now it's functional, so focus on native api
+                    > well it's a bit coupled with expand logic, so will need to be simplified later.
+            
+            >> This clarity is more important before coding.
+    26 March
+            // yeah it's there openFileHandle > better to have openFileByHandle?
+            >> Now I see I have already migrated some part 
+                > listFiles is mapped to createDirectoryNode
+                > fileList is mapped to { children: [...] }
+                    >> the iterateFiles mapping is in todo. continue here
+                // > naturally now browseDirectory should be migrated as it is using it.
+            > flow is like: 
+                openDirectory -> uses native api, reads recursively and returns the directory node to render FileTree with.
+                openFileHandle -> read file from handle (returns {file: {name, content, ...etc})
+                    > note: needs try catch   
+            >> Can we connect this flow right now?
+                // > open directory
+                // > display the structure 
+                >> read contents of selected?
+                
+    27 March
+        > [later] the api also supports drag n drop
+            https://web.dev/file-system-access/#drag-and-drop-integration
+        
+        > [time-consumed] the state management can be simpler with another library than react-virtualized-tree.
+            > anuraghazra/react-folder-tree : has nodeClick listener, but no state storage.
+            > shunjizhan/react-folder-tree : does have extra state.
+            > But think again, for showing loaders etc - custom Node support is not there.
+                > updating state has same effort as we need to return update tree and not 
+
+    28 March
+        > continue "read contents of selected?"
+            > read as image 
+                // > read first file in first folder
+                    // > lost time in previewing: node.name != "omr_marker.jpg"
+                > Looks like OpenCVJS only accepts a dom node for imread into mat
+                    > read first file as cv.mat using cv.imdecode
+                    > nodejs vs browser difference!
+                > read all files in first folder
+                > create input for process_dir 
+            > process the image
+                > think on what happens when a user clicks process on root folder
+                    > do we run those saga tasks per image with p-limit, or do we simply let react node's state handle it.
+                        > well I shouldn't doubt my own deductions from months ago and use the saga task only.
+    
+    30-31 March 2022
+        > Merge FileTree and LiveTuner
+            > data url to mat -> use new Image() it shall work (we already have matFromDataURL())
+            > FileTree api gives data url, LiveTuner takes mat 
+                > LiveTuner shall handle data urls and convert 
+            > check for memory leaks 
+        > 
