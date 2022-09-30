@@ -1,0 +1,239 @@
+> HactoberFest hype!!
+    Read brief about hacktober fest
+        > Yep, only hacktoberfest topic is sufficient
+        > Reward criteria (in short merge a PR)
+            Merge unique PR/MRs 
+            Provide an approving review of a PR/MR
+            Add the “hacktoberfest-accepted” label
+            Add any label with the word “invalid” or “spam”
+            
+    Github issues 
+        > low-hanging 3
+            > tag them first-timers-only / up-for-grabs
+        > proper 3
+            > Sort them by efforts needed
+    Decisions 
+        > merging dev into master?
+        > releasing the JS repo? Trust the data.
+
+    Errands after issues listing
+        > Update PR Template, CONTRIBUTING.MD
+        > Cleaning up/updating wiki
+        > Later populate Projects tab maybe
+        > Raise a PR to https://github.com/mungell/awesome-for-beginners
+
+    How to get listed on popular platforms?
+        > https://goodfirstissue.dev/
+            > probably just the tag (so time your launch here)
+        > increase your tags according to https://up-for-grabs.net/#/
+        > Update your discord handle to DazzleCat | HacktoberFesting
+        > Time your launch!
+            > post in #project-sharing https://discord.com/invite/hacktoberfest
+            not tooo pop maybe > https://github.com/Gismo1337/hacktoberfest-project-list/blob/master/CONTRIBUTING.md
+        > Reddit post again
+            > https://www.reddit.com/r/hacktoberfest/
+
+    Links from nemo about his opensource project
+
+    
+    29 Sep 2022
+        Beginner level 
+            Readme
+                > Update install steps for windows
+
+            Get Familiar with code
+                > log levels!
+                    > explore the code based on the logs you see. And add log levels to them as part of your first contribution!
+                    > If tidy readable outputs interest you, try using colorama to indicate log levels
+                        > You can also propose "modes" of logs: dev/user/minimal/silent
+                    
+                    > Create a starter branch with initial code change commit to indicate what to do!
+                    
+                > Make image outputs better 
+                    > add appropriate labels to all output images
+
+                > Understand inputs 
+                    > add schema validation for template configuration
+                
+            Learn Image Processing 
+                > Best part of working with opencv is visually seeing each step. 
+                > Well, OMRChecker also generates many step-wise images. 
+                
+            Code Exposure 
+                > Help contribute by proposing a way to intuitively show the images to ease debugging new images.
+                
+            Make it Fun 
+                > Submit your sample images to be featured in the repo!
+                > [later] There are also scripts that generate gifs, you can pick it up to make it part of the flow
+
+            Work on a feature
+                Improve the CLI experience
+                    > Go through current logs produced and reduce the noise 
+
+                Auto Rotate Feature 
+                    > Real user validation: https://discord.com/channels/590134763784896514/590134763784896520/908620446201696316
+                
+                Add analytics
+                    [later] > Implement accuracy evaluation against final results
+                        > evaluate_correctness in legacy branch
+                    > Calculate confidence metrics
+                    > Speed metrics more attractive
+                        Finished Checking 1 files in 0.8 seconds i.e. ~0.0 minutes.
+                        OMR Processing Rate  :   ~ 0.79 seconds/OMR
+                        OMR Processing Speed :   ~ 75.95 OMRs/minute
+
+
+                Want to work on making a browser interface?
+                    > Contact the developer to know more!
+
+                Add a dry run capability 
+                    > preliminary_check() to validate all templates and image quality for page cropping, etc plugin checks
+                        > the plugins may define their self checks
+
+            Are you intermediate?
+                > Handling col_orient
+                > Add globalOriginShift in template.json
+
+            Are you a pro?
+                > Propose a code refactor based on a design pattern. (Help guaranteed)
+                > add Simple parallelization to speed up the checking across files.
+                > Use pyrDowns to optimize the image morphs.
+                > Experienced in data visualizations/analytics? 
+                    > Contact the developer for a dataset.
+                > Propose a marking scheme evaluation support via template.json file.
+            
+            > Dev ex  errands 
+                // > New discord channel: https://discord.gg/ANUuzsrpVV
+                // created ticket > Change default experience to non-blocking, WYSIWYG ref to Readme.
+                > Create PR template?
+                > Contributing.md
+                    // > Style guide 
+                    > PR template link 
+                    > Pylint and pep8 installation
+                > [Create issue] git pre-commit hook for prettify, pre-push for pep8 score.
+                    > setup.cfg
+                        # It takes a few seconds for the imports
+                        print(f"Loading OMRChecker modules...")
+                > [later] Ignore glob in template.json
+
+
+// existing todos
+
+// > put them up
+    // It's a feature > link project with issues 
+
+// > 1 more first-timers-only issue 
+    > sample images submit! yes!
+    > logging yep 
+
+> then Create starter branches
+    > oof need the dev merge eh?
+    > 
+
+new todos while browsing merged code again.
+    > look for basic bugs too 
+    > make outputs lil bit better(devX errands)
+    > list down main things that make it hard to understand
+
+
+start with make those 6 branches, later rebase on your minor changes?
+
+BRANDING!!
+> no need of writing the action 
+    > still read into telegram as well
+
+After branding, you have buffer to work on the react part.
+    > trust data and the sagas :D 
+    > those who crack it are worthy of using it for free
+
+
+30 Sept 
+    > Dev branch merge!
+        // > just run on all samples and merge!
+            > only the feature matching sample is not working (sample5).
+                > it seems a simple data type issue. Let's give it 30.
+                > debugged in 5, but incorrect output in it.
+                    > Okay the fb template isn't working  
+                        > AttributeError: 'tuple' object has no attribute 'sort'
+                    > It's okay make it a task to fix it!
+        //> Merge conflicts 
+        //> Doc updates 
+            // > Readme 
+                // > Merge conflicts
+                // > New run steps 
+            // > Wiki update same
+            // > Issue links 
+                > showimglvl -> show_image_level
+        
+        > Now the social media Post!
+            // > First the github repos PRs 
+                > https://github.com/OtacilioN/awesome-hacktoberfest-2022/pull/468
+                > https://github.com/up-for-grabs/up-for-grabs.net/pull/3419
+                > https://github.com/MunGell/awesome-for-beginners/pull/1135
+            // > Sanity checks from friends 
+                // > Update readme annoyances: https://github.com/Udayraj123/OMRChecker/issues/50
+            > Discord
+                // > Pesto also
+                // > Eddihub
+                // > Coding Club IITG 
+                > Cross IIT portal?
+
+            > LinkedIn 
+                > First prepare the content
+                    > family share friendly post 
+                    > also consider zack jackson etc maybe discuss working on JS part
+                > Before posting send requests to ppl from telegram 
+            > Network via whatsapp/fb page.
+            > Slack 
+                > office grp 
+                // > Tech Weekly
+            // > Messenger - Techno Online + CSE current fachhas
+            
+
+
+        > Bug issues create     
+            > stack output images incorrect.
+            > sample5 fb
+            > Preview images don't come to front 
+                > https://stackoverflow.com/questions/67429127/bring-opencv-window-to-front-with-focus-on-macos
+
+        
+    Hacktoberfest
+        > ./post_content_raw_oct_2022.txt
+            > Techno usecase video is here: https://www.facebook.com/100001154316092/videos/2378903958824725/
+        > Create a wall of OMRChecker screenshots from folks using it on their machine :D 
+
+    6 Oct 
+        > From todos in codebase:
+            2. Configure the tuning parameters (help needed for documentation!).
+
+    9 Oct 
+    // > Let's finish that diagram 
+        // > UI 
+        // > Flow revisit 
+
+    Draft project items 
+        > Extract todos from code comments 
+        > From old texts
+        > Moderation Portal discussion 
+        > Evaluation script
+        > Extract photo plugin
+            > add QR code/barcode application (~/Downloads/Img)
+
+    One post 
+        > naah, let it be blog now! you'll finish it only then.
+    
+        // Blog post part 1: Feedbacks and Reach!
+            > to invite more general attention 
+        
+        Blog post part 2: How Technothlon successfully used it 
+            > to invite more large scale users
+            > to brief about Moderation portal and coming features.
+
+        Blog post part 3: Opensource journey story 
+            > to invite more contributors 
+            > learnings of why open source.
+
+    15 Oct 2022
+    > Continued in ./Obsidian
+

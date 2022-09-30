@@ -1492,3 +1492,5 @@ redux
                 > LiveTuner shall handle data urls and convert 
             > check for memory leaks 
         > 
+
+    Continued in ./notes_from_oct_2022.txt

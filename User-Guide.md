@@ -1,5 +1,5 @@
 ## Step by step walkthrough for creating a basic template
-**Note for contributors:** There's a [TODO Challenge](./TODOs) to automate this process using image processing. 
+<!-- **Note for contributors:** There's a [TODO Challenge](./TODOs) to automate this process using image processing.  -->
 
 This tutorial will show you how to create template layout files using a simple example.
 
@@ -21,50 +21,31 @@ _Note: To be able to copy below snippets directly, consider using [CodeCopy Chro
 
 ```
 {
-    "Dimensions": [
-        300,
-        400
-    ],
-    "BubbleDimensions": [
-        20,
-        20
-    ],
-    "Concatenations": {},
-    "Singles": [
-        "q1",
-        "q2",
-        "q3",
-        "q4",
-        "q5"
-    ],
-    "QBlocks": {
-        "MCQBlock1": {
-            "qType": "QTYPE_MCQ5",
-            "orig": [
-                0,
-                0
-            ],
-            "qNos": [
-                [
-                    [
-                        "q1",
-                        "q2",
-                        "q3",
-                        "q4",
-                        "q5"
-                    ]
-                ]
-            ],
-            "gaps": [
-                30,
-                30
-            ],
-            "bigGaps": [
-                30,
-                30
-            ]
-        }
+  "dimensions": [ 300, 400 ],
+  "bubbleDimensions": [ 20, 20 ],
+  "concatenations": {},
+  "singles": [ "q1", "q2", "q3", "q4", "q5" ],
+  "qBlocks": {
+    "MCQBlock1": {
+      "qType": "QTYPE_MCQ5",
+      "orig": [ 0, 0 ],
+      "qNos": [
+        [
+          [ "q1", "q2", "q3", "q4", "q5" ]
+        ]
+      ],
+      "gaps": [ 30, 30 ],
+      "bigGaps": [ 30, 30 ]
     }
+  },
+  "preProcessors": [
+    {
+      "name": "CropPage",
+      "options": {
+        "morphKernel": [ 10, 10 ]
+      }
+    }
+  ]
 }
 ```
 
@@ -92,13 +73,15 @@ Clearly we need to update the gaps to be bigger. Also, horizontal gaps are small
 ```
 The bubbles also should be made slightly bigger
 ```
-  "BubbleDimensions": [25, 25 ],
+  "bubbleDimensions": [25, 25 ],
 ```
 Run the command again to get the arranged layout.
 <!-- put final_layout here -->
 <p align="center">
   <img alt="Final Layout" width="400" src="./images/final_layout.png">
 </p>
+
+Note the "preProcessors" array, there are various plugins to use. Each plugin is described with a `name` and an `options` object that contains the configuration of the plugin. In our case, we use the 'CropPage' plugin with a (default) option of using morph kernel of size [10, 10].
 
 Above is the simplest version of what the template.json can do. 
 
@@ -117,7 +100,7 @@ Please check the `sample1/` folder to understand the use of `omr_marker.jpg`. If
 <!-- bummer: do not change the header text as it's linked -->
 ## Running OMRChecker
 ```
-python3 main.py [--noCropping] [--setLayout] [--autoAlign] [--inputDir dir1] [--outputDir dir1] [--template path/to/template.json]
+python3 main.py [--setLayout] [--autoAlign] [--inputDir dir1] [--outputDir dir1]
 ```
 Explanation for the arguments:
 
@@ -125,13 +108,14 @@ Explanation for the arguments:
 
 `--setLayout`: Set up OMR template layout - modify your json file and run again until the template is set.
 
-`--noCropping`: Disables page contour detection - used when page boundary is not visible e.g. document scanner or a close up capture.
+<!-- `--noCropping`: Disables page contour detection - used when page boundary is not visible e.g. document scanner or a close up capture. -->
 
 `--inputDir`: Specify an input directory.
 
 `--outputDir`: Specify an output directory.
 
-`--template`: Specify a default template if no template file in input directories.
+<!-- `--template`: Specify a default template if no template file in input directories. -->
 
+**Note:** The `--noCropping` flag has been replaced with including/excluding a 'CropPage' plugin in "preProcessors" of the template.json(see [samples](https://github.com/Udayraj123/OMRChecker/tree/master/samples)).
 
 <!-- mention col_orient by example -->
