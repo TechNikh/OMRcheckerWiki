@@ -15,27 +15,20 @@ First let's make a layout for a sample OMR from [Adrian's blog](https://pyimages
 
 2. Download above OMR image and put it into `inputs/AdrianSamples/`.
 
-3. Create a file `inputs/template.json`. Start with putting the following text in it.
-
-_Note: To be able to copy below snippets directly, consider using [CodeCopy Chrome](https://chrome.google.com/webstore/detail/codecopy/fkbfebkcoelajmhanocgppanfoojcdmg) | [CodeCopy Firefox](https://addons.mozilla.org/en-US/firefox/addon/codecopy/)._
+3. Create a file `inputs/template.json`. Putting the following starter json in it.
 
 ```
 {
-  "dimensions": [ 300, 400 ],
+  "pageDimensions": [ 300, 400 ],
   "bubbleDimensions": [ 20, 20 ],
-  "concatenations": {},
-  "singles": [ "q1", "q2", "q3", "q4", "q5" ],
-  "qBlocks": {
+  "customLabels": {},
+  "fieldBlocks": {
     "MCQBlock1": {
-      "qType": "QTYPE_MCQ5",
-      "orig": [ 0, 0 ],
-      "qNos": [
-        [
-          [ "q1", "q2", "q3", "q4", "q5" ]
-        ]
-      ],
-      "gaps": [ 30, 30 ],
-      "bigGaps": [ 30, 30 ]
+      "fieldType": "QTYPE_MCQ5",
+      "origin": [ 0, 0 ],
+      "fieldLabels": ["q1", "q2", "q3", "q4", "q5"],
+      "bubblesGap": 30,
+      "labelsGap": 30
     }
   },
   "preProcessors": [
@@ -50,7 +43,7 @@ _Note: To be able to copy below snippets directly, consider using [CodeCopy Chro
 ```
 
 Now run `python3 main.py --setLayout`. The page should get cropped automatically and show a basic overlay of the template.
-Note that we have put `"orig": [0, 0],` which means the overlay will start from the top left corner.
+Note that we have put `"origin": [0, 0],` which means the overlay will start from the top left corner.
 
 <p align="center">
   <img alt="Initial Layout" width="400" src="./images/initial_layout.png">
@@ -58,7 +51,7 @@ Note that we have put `"orig": [0, 0],` which means the overlay will start from 
 Now let's adjust the top left corner(origin). Change origin from [0,0] to a better coordinate, say [50, 50] and run above command again. After multiple trials, you should find that origin is best fit at [65, 60]. Update the origin in json file : 
 
 ```
-    "orig": [65, 60],
+    "origin": [65, 60],
 ```
 Run the command again.
 <!-- Put origin_step here -->
@@ -66,10 +59,11 @@ Run the command again.
   <img alt="Origin Step" width="400" src="./images/origin_step.png">
 </p>
 
-Now let's tweak over `gaps`. The following diagram explains the concept of gaps. 
+Now let's tweak over the two gaps `bubblesGap` and `labelsGap`. 
 Clearly we need to update the gaps to be bigger. Also, horizontal gaps are smaller than vertical ones. Tweaked gaps come out to be- 
 ```
-    "gaps" : [41, 52],
+    "bubblesGap" : 41,
+    "labelsGap" : 52,
 ```
 The bubbles also should be made slightly bigger
 ```
@@ -85,37 +79,30 @@ Note the "preProcessors" array, there are various plugins to use. Each plugin is
 
 Above is the simplest version of what the template.json can do. 
 
-For more templates see [sample folders](https://github.com/Udayraj123/OMRChecker/tree/master/samples) which make use of *bigGaps* parameter as well.
+For more templates see [sample folders](https://github.com/Udayraj123/OMRChecker/tree/master/samples).
 
 To understand how rest of the parameters work in template.json, checkout [About Templates](./About-Templates)
 
 ### Note for capturing using mobile phones
 
-Please check the `sample1/` folder to understand the use of `omr_marker.jpg`. If you can modify your OMR sheets with these markers, it will give you much higher accuracy when scanning using mobile camera.
+Please check the `sample1/` folder to understand the use of `omr_marker.jpg`. If you can modify your OMR sheets with these markers, it will give you much higher accuracy when scanning using mobile camera. We enable the markers plugin using the following snippet.
 
-<!-- 
-	1. Put marker crop(If any) at `inputs/omr_marker.jpg`. Adjust SheetToMarkerWidthRatio in globals.py 
--->
+```js
+{
+  // ...
+  "preProcessors": [
+    // ...
+    {
+      "name": "CropOnMarkers",
+      "options": {
+        "relativePath": "omr_marker.jpg",
+      }
+    }
+  ]
+}
+```
 
 <!-- bummer: do not change the header text as it's linked -->
 ## Running OMRChecker
-```
-python3 main.py [--setLayout] [--autoAlign] [--inputDir dir1] [--outputDir dir1]
-```
-Explanation for the arguments:
 
-`--autoAlign`: (experimental) Enables automatic template alignment - use if the scans show slight misalignments.
-
-`--setLayout`: Set up OMR template layout - modify your json file and run again until the template is set.
-
-<!-- `--noCropping`: Disables page contour detection - used when page boundary is not visible e.g. document scanner or a close up capture. -->
-
-`--inputDir`: Specify an input directory.
-
-`--outputDir`: Specify an output directory.
-
-<!-- `--template`: Specify a default template if no template file in input directories. -->
-
-**Note:** The `--noCropping` flag has been replaced with including/excluding a 'CropPage' plugin in "preProcessors" of the template.json(see [samples](https://github.com/Udayraj123/OMRChecker/tree/master/samples)).
-
-<!-- mention col_orient by example -->
+Note: this section is moved to the [Project Readme](https://github.com/Udayraj123/OMRChecker#full-usage)
